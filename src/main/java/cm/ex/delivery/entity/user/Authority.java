@@ -28,4 +28,8 @@ public class Authority {
     @Column(name = "level")
     private String level;
 
+    public Authority(String authority, String level) {
+        this.authority = authority;
+        this.level = level;
+    }
 }

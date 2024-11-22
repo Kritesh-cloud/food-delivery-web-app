@@ -39,4 +39,11 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "authority_id"))
     private Set<Authority> authority;
+
+    public User(String fullName, String email, String password, Set<Authority> authority) {
+        this.fullName = fullName;
+        this.email = email;
+        this.password = password;
+        this.authority = authority;
+    }
 }
