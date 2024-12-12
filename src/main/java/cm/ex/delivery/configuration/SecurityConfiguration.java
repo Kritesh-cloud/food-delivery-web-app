@@ -1,6 +1,6 @@
 package cm.ex.delivery.configuration;
 
-import cm.ex.delivery.security.filter.AuthenticationFilter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +20,13 @@ public class SecurityConfiguration {
 
     Logger logger = LoggerFactory.getLogger(SecurityConfiguration.class);
 
-    @Autowired
-    private AuthenticationFilter authenticationFilter;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         logger.info("SecurityConfiguration");
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
+//                .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/test").permitAll()
                         .requestMatchers("/signIn").permitAll()

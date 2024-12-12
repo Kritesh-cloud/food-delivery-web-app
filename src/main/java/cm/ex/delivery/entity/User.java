@@ -1,49 +1,50 @@
 package cm.ex.delivery.entity;
 
-import cm.ex.delivery.entity.user.Authority;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import lombok.*;
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id")
     private UUID id;
 
-    @NotBlank(message="please enter user data")
-    @Column(name = "full_name")
-    private String fullName;
+    private String name;
 
-    @NotBlank(message="please enter user data")
-    @Column(name = "email")
     private String email;
 
-    @NotBlank(message="please enter user data")
-    @Column(name = "password")
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_authority_list",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "authority_id"))
-    private Set<Authority> authority;
+    private String profileUrl;
 
-    public User(String fullName, String email, String password, Set<Authority> authority) {
-        this.fullName = fullName;
-        this.email = email;
-        this.password = password;
-        this.authority = authority;
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user__authorities",
+            joinColumns = @JoinColumn(name = "user_id", updatable = true),
+            inverseJoinColumns = @JoinColumn(name = "authority_id", updatable = true))
+    private Set<Authority> authoritySet;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }

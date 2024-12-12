@@ -1,112 +1,71 @@
 package cm.ex.delivery.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import lombok.*;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Set;
 import java.util.UUID;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
-@Table(name = "restaurants")
+@Table(name = "restaurant")
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class Restaurant {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id")
     private UUID id;
 
-    @NotBlank(message="please enter restaurant data")
-    @Column(name = "name")
     private String name;
 
-    @NotBlank(message="please enter restaurant data")
-    @Column(name = "description")
     private String description;
 
-    @NotBlank(message="please enter restaurant data")
-    @Column(name = "address")
     private String address;
 
-    @NotBlank(message="please enter restaurant data")
-    @Column(name = "phone")
-    private String phone;
+    private String contactNumber;
 
-    @NotBlank(message="please enter restaurant data")
-    @Column(name = "email")
     private String email;
 
-    @NotBlank(message="please enter restaurant data")
-    @Column(name = "website")
-    private String website;
+    private String iconUrl;
 
-    @NotBlank(message="please enter restaurant data")
-    @Column(name = "image_url")
-    private String imageUrl;
+    private String backgroundUrl;
 
-//    @NotBlank(message="please enter restaurant data")
-    @Column(name = "latitude")
-    private int latitude;
-
-    //    @NotBlank(message="please enter restaurant data")
-    @Column(name = "longitude")
-    private int longitude;
-
-    @NotBlank(message="please enter restaurant data")
-    @Column(name = "city")
-    private int city;
-
-    @NotBlank(message="please enter restaurant data")
-    @Column(name = "postal_code")
-    private String postalCode;
-
-    @NotBlank(message="please enter restaurant data")
-    @Column(name = "cuisine_type")
-    private String cuisineType;
-
-    @NotBlank(message="please enter restaurant data")
-    @Column(name = "categories")
-    private String categories;
-
-    @NotBlank(message="please enter restaurant data")
-    @Column(name = "opening_time")
     private LocalTime openingTime;
 
-    @NotBlank(message="please enter restaurant data")
-    @Column(name = "closing_time")
     private LocalTime closingTime;
 
-    @NotBlank(message="please enter restaurant data")
-    @Column(name = "delivery_radius")
-    private String deliveryRadius;
+    private LocalDateTime createdAt;
 
-    @NotBlank(message="please enter restaurant data")
-    @Column(name = "delivery_fee")
-    private String deliveryFee;
+    private LocalDateTime updatedAt;
 
-    @NotBlank(message="please enter restaurant data")
-    @Column(name = "free_delivery_threshold")
-    private String freeDeliveryThreshold;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "owner_id", referencedColumnName = "id")
+    private User ownerId;
 
-    @Column(name = "is_active")
-    private boolean isActive;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "restaurant__category",
+            joinColumns = @JoinColumn(name = "restaurant_id", updatable = true),
+            inverseJoinColumns = @JoinColumn(name = "category_id", updatable = true))
+    private Set<Category> categorySet;
 
-    @Transient
-    private boolean isOpen = false;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "restaurant__gallery",
+            joinColumns = @JoinColumn(name = "restaurant_id", updatable = true),
+            inverseJoinColumns = @JoinColumn(name = "gallery_id", updatable = true))
+    private Set<Gallery> gallerySet;
 
-    public void findIsOpen(){
-        LocalTime currentTime = LocalTime.now();
-        if (openingTime.isBefore(closingTime)) {
-            // Case when start time is before end time (normal case)
-            isOpen = currentTime.isAfter(openingTime) && currentTime.isBefore(closingTime);
-        } else {
-            // Case when start time is after end time (e.g., overnight range)
-            isOpen = currentTime.isAfter(openingTime) || currentTime.isBefore(closingTime);
-        }
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }

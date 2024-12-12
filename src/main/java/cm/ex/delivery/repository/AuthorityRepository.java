@@ -1,19 +1,11 @@
 package cm.ex.delivery.repository;
 
-import cm.ex.delivery.entity.user.Authority;
+import cm.ex.delivery.entity.Authority;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-import java.util.UUID;
+import java.util.Optional;
 
-@Repository
-public interface AuthorityRepository extends JpaRepository<Authority, UUID> {
+public interface AuthorityRepository  extends JpaRepository<Authority, Long> {
 
-    Authority findByAuthority(String authority);
-
-    Authority findByLevel(String level);
-
+    Optional<Authority> findByName(String name);
 }
-
-
-
