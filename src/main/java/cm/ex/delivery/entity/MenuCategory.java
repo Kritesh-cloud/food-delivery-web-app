@@ -18,6 +18,8 @@ public class MenuCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private int categoryOrder;
+
     private String name;
 
     @ManyToOne

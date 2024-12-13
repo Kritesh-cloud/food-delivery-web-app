@@ -17,7 +17,8 @@ public class BrowseContent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int order;
+    @Column(name = "content_order")
+    private Integer contentOrder;
 
     private String title;
 

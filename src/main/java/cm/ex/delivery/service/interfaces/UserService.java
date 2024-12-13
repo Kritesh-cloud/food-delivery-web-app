@@ -19,18 +19,4 @@ public interface UserService {
     public BasicResponse updateUser(User user);
 
     public BasicResponse deleteUser(String userId);
-//    //CREATE
-//    public BasicUserResponse addUser(SignUpUserDto signUpUserDto);
-//
-//    //READ
-//    public LoginResponse getUserToken(SignInUserDto signInUserDto);
-//    public User getUserById(UUID userId);
-//    public List<User> listAllUsers();
-//    public List<User> listAllUserByAuthority(Authority authority);
-//
-//    //UPDATE
-//    public BasicUserResponse UpdateUser(User user);
-//
-//    //DELETE
-//    public BasicUserResponse deleteUserById(UUID userId);
 }

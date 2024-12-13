@@ -17,9 +17,16 @@ public class Gallery {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String imageUrl;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id", referencedColumnName = "id")
+    private Image imageId;
 
-    private String ownerId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "restaurant_id", referencedColumnName = "id")
+    private Restaurant restaurantId;
 
-    private String ownerType;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "owner_id", referencedColumnName = "id")
+    private User userId;
+
 }

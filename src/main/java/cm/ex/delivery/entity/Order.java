@@ -21,6 +21,8 @@ public class Order {
 
     private String status; //Pending, accepted-preparing, prepared-delivering and delivering OR Declined.
 
+    private boolean active;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime purchasedAt;

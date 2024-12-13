@@ -13,6 +13,6 @@ public interface BrowseContentRepository  extends JpaRepository<BrowseContent, L
 
     List<BrowseContent> findAllByTitle(String title);
 
-    @Query("SELECT b FROM BrowseContent b ORDER BY b.order ASC")
-    List<BrowseContent> findAllByOrderAsc();
+    @Query("SELECT b FROM BrowseContent b ORDER BY b.contentOrder ASC")
+    List<BrowseContent> findAllByContentOrderAsc();
 }
