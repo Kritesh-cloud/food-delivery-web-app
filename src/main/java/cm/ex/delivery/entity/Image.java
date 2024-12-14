@@ -3,6 +3,7 @@ package cm.ex.delivery.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -24,4 +25,17 @@ public class Image {
     private String image;
 
     private String extension;
+
+    private LocalDateTime createdAt;
+
+    public Image(String name, String image, String extension) {
+        this.name = name;
+        this.image = image;
+        this.extension = extension;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }

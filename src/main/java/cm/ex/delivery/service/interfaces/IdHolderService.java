@@ -1,5 +1,6 @@
 package cm.ex.delivery.service.interfaces;
 
+import cm.ex.delivery.entity.BrowseContent;
 import cm.ex.delivery.entity.IdHolder;
 import cm.ex.delivery.response.BasicResponse;
 
@@ -7,7 +8,9 @@ import java.util.List;
 
 public interface IdHolderService {
 
-    public BasicResponse addToIdHolder(String id, String type);
+    public IdHolder addToIdHolder(String dataId, String dataType, BrowseContent browseContentId);
+
+    public IdHolder findById(String itemId);
 
     public List<IdHolder> listIdHolderByBrowseContentId(String browseContentId);
 

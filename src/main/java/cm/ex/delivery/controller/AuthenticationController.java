@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RequestMapping("")
 @RestController
 public class AuthenticationController {
@@ -21,8 +23,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/signUp")
-    public ResponseEntity<BasicResponse> signUp(User user) {
-        BasicResponse response = userService.signUp(user);
+    public ResponseEntity<BasicResponse> signUp(User user) throws IOException {
+        BasicResponse response = userService.signUp(user, null);
         return ResponseEntity.status(HttpStatusCode.valueOf(response.getCode())).body(response);
     }
 

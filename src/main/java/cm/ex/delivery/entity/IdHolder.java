@@ -17,9 +17,17 @@ public class IdHolder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private UUID dataId;
-
-    private Long longDataId;
+    private String dataId;
 
     private String dataType;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "browse_content_id", referencedColumnName = "id")
+    private BrowseContent browseContentId;
+
+    public IdHolder(String dataId, String dataType, BrowseContent browseContentId) {
+        this.dataId = dataId;
+        this.dataType = dataType;
+        this.browseContentId = browseContentId;
+    }
 }

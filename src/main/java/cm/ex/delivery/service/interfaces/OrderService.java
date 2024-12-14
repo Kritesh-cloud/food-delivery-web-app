@@ -17,5 +17,26 @@ public interface OrderService {
 
     public List<Order> listAllByUserId();
 
-    public BasicResponse cancelOrder();
+    public BasicResponse orderUpdateAcceptedPreparing();
+
+    public BasicResponse orderUpdatePreparedDelivering();
+
+    public BasicResponse orderUpdateDelivered();
+
+    public BasicResponse orderUpdateCancelled();
+
 }
+
+/*
+order process update
+
+public void orderUpdateAcceptedPreparing();
+
+public void orderUpdatePreparedDelivering();
+
+public void orderUpdateDelivered();
+
+public void orderUpdateCanceled();
+
+* */
+

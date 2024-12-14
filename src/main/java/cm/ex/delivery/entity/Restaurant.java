@@ -52,11 +52,17 @@ public class Restaurant {
             inverseJoinColumns = @JoinColumn(name = "category_id", updatable = true))
     private Set<Category> categorySet;
 
+//    @ManyToMany(fetch = FetchType.EAGER)
+//    @JoinTable(name = "restaurant__gallery",
+//            joinColumns = @JoinColumn(name = "restaurant_id", updatable = true),
+//            inverseJoinColumns = @JoinColumn(name = "gallery_id", updatable = true))
+//    private Set<Gallery> gallerySet;
+
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "restaurant__gallery",
+    @JoinTable(name = "restaurant__image__gallery",
             joinColumns = @JoinColumn(name = "restaurant_id", updatable = true),
-            inverseJoinColumns = @JoinColumn(name = "gallery_id", updatable = true))
-    private Set<Gallery> gallerySet;
+            inverseJoinColumns = @JoinColumn(name = "image_id", updatable = true))
+    private Set<Image> imageGallerySet;
 
     @PrePersist
     protected void onCreate() {

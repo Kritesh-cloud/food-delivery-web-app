@@ -24,10 +24,15 @@ public class BrowseContent {
 
     private String type;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "browse__content__id",
-            joinColumns = @JoinColumn(name = "browse_content_id", updatable = true),
-            inverseJoinColumns = @JoinColumn(name = "id_holder_id", updatable = true))
-    private Set<IdHolder> idHolderSet;
+//    @ManyToMany(fetch = FetchType.EAGER)
+//    @JoinTable(name = "browse__content__id",
+//            joinColumns = @JoinColumn(name = "browse_content_id", updatable = true),
+//            inverseJoinColumns = @JoinColumn(name = "id_holder_id", updatable = true))
+//    private Set<IdHolder> idHolderSet;
 
+
+    public BrowseContent(String title, String type) {
+        this.title = title;
+        this.type = type;
+    }
 }

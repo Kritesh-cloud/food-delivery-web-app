@@ -7,7 +7,9 @@ import java.util.List;
 
 public interface BrowseContentService {
 
-    public BasicResponse createBrowseContent(String itemId, String itemType);
+    public BasicResponse createBrowseContent(String title, String itemType);
+
+    public BasicResponse addItemToBrowseContent(String browseContentId, String itemId);
 
     public List<BrowseContent> listAllBrowseContentByOrder();
 
@@ -15,13 +17,9 @@ public interface BrowseContentService {
 
     public BrowseContent getBrowseContentByTitle(String title);
 
-    public BrowseContent getBrowseContentByType(String type);
-
     public BasicResponse updateOrder(int currentOrder, int newOrder);
 
     public BasicResponse removeBrowseContentItem(String browseContentId, String itemId);
-
-    public BasicResponse addBrowseContentItem(String browseContentId, String itemId);
 
     public BasicResponse removeBrowseContentById(String browseContentId);
 

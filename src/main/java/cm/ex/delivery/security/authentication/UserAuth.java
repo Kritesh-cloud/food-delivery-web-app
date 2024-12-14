@@ -1,5 +1,6 @@
 package cm.ex.delivery.security.authentication;
 
+import cm.ex.delivery.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ public class UserAuth implements Authentication {
     private String token;
     private String fullName;
     private List<GrantedAuthority> authority;
+    private User user;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

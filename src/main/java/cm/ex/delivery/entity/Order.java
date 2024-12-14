@@ -40,4 +40,9 @@ public class Order {
         createdAt = LocalDateTime.now();
     }
 
+    public Order(String status, boolean active, Basket basketId) {
+        this.status = status;
+        this.active = active;
+        this.basketId = basketId;
+    }
 }

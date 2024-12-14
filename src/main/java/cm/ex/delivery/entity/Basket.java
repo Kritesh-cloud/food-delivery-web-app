@@ -27,4 +27,9 @@ public class Basket {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private User ownerId;
+
+    public Basket(Set<MenuItem> menuItemSet, User ownerId) {
+        this.menuItemSet = menuItemSet;
+        this.ownerId = ownerId;
+    }
 }

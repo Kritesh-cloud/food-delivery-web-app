@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface BasketService {
 
-    public BasicResponse createBasket();
+    public Basket createBasket(User ownerId);
 
     public List<Basket> listUserBasket();
 
@@ -17,4 +17,6 @@ public interface BasketService {
     public BasicResponse updateItemQuantityOfBasket(String itemId, int quantity);
 
     public BasicResponse removeItemFromBasket(String itemId);
+
+    public BasicResponse removeBasket(User ownerId);
 }

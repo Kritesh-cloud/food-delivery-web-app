@@ -90,7 +90,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             throw new AccessDeniedException("Bad Credentials");
         }
 
-        return new UserAuth(user.get().getId().toString(), true, username, null, null, user.get().getName(), convertToGrantedAuthorities(user.get().getAuthoritySet()));
+        return new UserAuth(user.get().getId().toString(), true, username, null, null, user.get().getName(), convertToGrantedAuthorities(user.get().getAuthoritySet()),user.get());
     }
 
     private UserAuth userTokenAuth(String token) throws AccessDeniedException {
@@ -100,7 +100,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             throw new UsernameNotFoundException("Username not found");
         }
 
-        UserAuth userAuth = new UserAuth(user.get().getId().toString(), true, user.get().getEmail(), null, null, user.get().getName(), convertToGrantedAuthorities(user.get().getAuthoritySet()));
+        UserAuth userAuth = new UserAuth(user.get().getId().toString(), true, user.get().getEmail(), null, null, user.get().getName(), convertToGrantedAuthorities(user.get().getAuthoritySet()),user.get());
         if (!jwtService.isTokenValid(token, userAuth)) {
             throw new JwtException("Invalid token");
         }

@@ -3,7 +3,6 @@ package cm.ex.delivery.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Set;
 
 @Entity
 @Table(name = "menu_category")
@@ -26,5 +25,9 @@ public class MenuCategory {
     @JoinColumn(name = "restaurantId")
     private Restaurant restaurantId;
 
-
+    public MenuCategory(int categoryOrder, String name, Restaurant restaurantId) {
+        this.categoryOrder = categoryOrder;
+        this.name = name;
+        this.restaurantId = restaurantId;
+    }
 }

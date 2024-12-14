@@ -30,4 +30,10 @@ public class MenuItem {
     @JoinColumn(name = "menu_category_id") // Foreign key column
     private MenuCategory menuCategory;
 
+    public MenuItem(int itemOrder, String name, double price, MenuCategory menuCategory) {
+        this.itemOrder = itemOrder;
+        this.name = name;
+        this.price = price;
+        this.menuCategory = menuCategory;
+    }
 }
