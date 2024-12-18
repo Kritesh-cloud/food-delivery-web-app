@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface AuthorityService {
 
-    public BasicResponse addAuthority(String authority);
+    public Authority addAuthority(String authority);
 
     public List<Authority> listAuthority();
 

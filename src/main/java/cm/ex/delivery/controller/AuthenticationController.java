@@ -23,13 +23,13 @@ public class AuthenticationController {
     }
 
     @PostMapping("/signUp")
-    public ResponseEntity<BasicResponse> signUp(User user) throws IOException {
+    public ResponseEntity<BasicResponse> signUp(@RequestBody User user) throws IOException {
         BasicResponse response = userService.signUp(user, null);
         return ResponseEntity.status(HttpStatusCode.valueOf(response.getCode())).body(response);
     }
 
     @PostMapping("/signIn")
-    public ResponseEntity<BasicResponse> signIn(User user) {
+    public ResponseEntity<BasicResponse> signIn(@RequestBody User user) {
         BasicResponse response = userService.logIn(user);
         return ResponseEntity.status(HttpStatusCode.valueOf(response.getCode())).body(response);
     }

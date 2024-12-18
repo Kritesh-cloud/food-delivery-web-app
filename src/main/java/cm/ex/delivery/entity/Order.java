@@ -32,12 +32,21 @@ public class Order {
     private Basket basketId;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "owner_id", referencedColumnName = "id")
-    private User ownerId;
+    @JoinColumn(name = "restaurant", referencedColumnName = "id")
+    private Restaurant restaurant;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "buyer", referencedColumnName = "id")
+    private User buyer;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "delivery_person", referencedColumnName = "id")
+    private User deliveryPerson;
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        deliveryPerson = null;
     }
 
     public Order(String status, boolean active, Basket basketId) {

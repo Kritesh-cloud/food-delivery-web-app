@@ -14,7 +14,13 @@ import lombok.*;
 public class BasicResponse {
 
     private boolean status;
+    private boolean result;
     private int code;
     private String token;
     private String message;
+
+
+    public BasicResponse(String message) {
+        this.message = message;
+    }
 }

@@ -4,6 +4,7 @@ import cm.ex.delivery.entity.BrowseContent;
 import cm.ex.delivery.repository.BrowseContentRepository;
 import cm.ex.delivery.repository.IdHolderRepository;
 import cm.ex.delivery.repository.UserRepository;
+import cm.ex.delivery.request.BrowseListDto;
 import cm.ex.delivery.response.BasicResponse;
 import cm.ex.delivery.service.interfaces.BrowseContentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,11 @@ public class BrowseContentServiceImpl implements BrowseContentService {
     private IdHolderServiceImpl idHolderService;
 
     @Override
-    public BasicResponse createBrowseContent(String title, String itemType) {
-        browseContentRepository.save(new BrowseContent(title, itemType));
+    public BasicResponse createBrowseContent(BrowseListDto browseListDto) {
+        BrowseContent browseContent = browseContentRepository.save(new BrowseContent(browseListDto.getTitle(), browseListDto.getType()));
+        for (String itemId : browseListDto.getIdList()) {
+            addItemToBrowseContent(browseContent.getId().toString(), itemId);
+        }
         return BasicResponse.builder().status(true).code(200).message("Browse Content created successfully").build();
     }
 

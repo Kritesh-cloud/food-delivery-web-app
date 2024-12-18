@@ -179,7 +179,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         }
     }
 
-    private Restaurant getRestaurant() {
+    public Restaurant getRestaurant() {
         UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
 
         Optional<Restaurant> restaurant = restaurantRepository.findByOwnerId(userAuth.getUser());

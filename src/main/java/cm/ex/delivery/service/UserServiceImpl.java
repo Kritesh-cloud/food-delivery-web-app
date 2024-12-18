@@ -10,6 +10,7 @@ import cm.ex.delivery.security.authentication.UserAuth;
 import cm.ex.delivery.service.interfaces.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,6 +38,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Autowired
     private AuthorityRepository authorityRepository;
+
+    @Autowired
+    private AuthorityServiceImpl authorityService;
 
     @Autowired
     private JwtService jwtService;
@@ -86,7 +90,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public User userInfo(String userId) {
+    public User userInfo() {
         UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
         User user = userAuth.getUser();
         return User.builder()
@@ -99,13 +103,25 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public List<User> userList(String userId) {
+    public List<User> userList() {
         List<User> userList = userRepository.findAll();
+        userList = userList.stream().map(user -> {
+            return User.builder()
+                    .id(user.getId())
+                    .name(user.getName())
+                    .email(user.getEmail())
+                    .profileUrl(user.getProfileUrl())
+                    .createdAt(user.getCreatedAt())
+                    .updatedAt(user.getUpdatedAt())
+                    .authoritySet(user.getAuthoritySet())
+                    .build();
+        }).toList();
         return userList.isEmpty() ? List.of() : userList;
     }
 
     @Override
-    public BasicResponse updateUser(User user, MultipartFile profileImage) throws IOException {
+    public BasicResponse updateUser(User user) {
+
         Optional<User> updateUser = userRepository.findById(user.getId());
         if (updateUser.isEmpty())
             return BasicResponse.builder().status(false).code(409).message("Account not found").build();
@@ -115,18 +131,59 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         updateUser.get().setPassword(passwordEncoder.encode(user.getPassword()));
         updateUser.get().setProfileUrl(user.getProfileUrl());
 
-        if (!Objects.requireNonNull(profileImage.getOriginalFilename()).isEmpty()) {
-            imageService.removeImage(extractImageId(user.getProfileUrl()));
-            Image iconImage = imageService.addImage(profileImage);
-            user.setProfileUrl("http://localhost:8080/image/" + iconImage.getId());
-        }
+//        when profile image is added
+//        if (!Objects.requireNonNull(profileImage.getOriginalFilename()).isEmpty()) {
+//            imageService.removeImage(extractImageId(user.getProfileUrl()));
+//            Image iconImage = imageService.addImage(profileImage);
+//            user.setProfileUrl("http://localhost:8080/image/" + iconImage.getId());
+//        }
 
         userRepository.save(updateUser.get());
         return BasicResponse.builder().status(true).code(200).message("User account updated successfully").build();
     }
 
     @Override
-    public BasicResponse deleteUser(String userId) {
+    public BasicResponse updateAddUserAuthority(String newAuthority) {
+        UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
+        Set<Authority> authoritySet = userAuth.getUser().getAuthoritySet();
+        Optional<Authority> checkAuthority = authorityRepository.findByAuthority(newAuthority);
+        if (checkAuthority.isEmpty())
+            return BasicResponse.builder().code(401).result(false).status(false).message("no authority").build();
+
+        if (newAuthority.equalsIgnoreCase("moderator")) {
+            if (!authoritySet.contains(new Authority("admin"))) {
+                throw new AccessDeniedException("No authority");
+            }
+        }
+
+        if (newAuthority.equalsIgnoreCase("delivery")) {
+            if (!authoritySet.contains(new Authority("admin"))) {
+                throw new AccessDeniedException("No authority");
+            }
+        }
+
+        if (newAuthority.equalsIgnoreCase("staff")) {
+            if (!authoritySet.contains(new Authority("owner"))) {
+                throw new AccessDeniedException("No authority");
+            }
+        }
+
+        if (newAuthority.equalsIgnoreCase("admin")) {
+            throw new AccessDeniedException("No authority");
+        }
+
+        Authority authority = authorityService.addAuthority(newAuthority);
+
+        return BasicResponse.builder().code(200).result(true).status(true).message("Authority updated successfully").build();
+    }
+
+    @Override
+    public BasicResponse updateRemoveUserAuthority(String newAuthority) {
+        return null;
+    }
+
+    @Override
+    public BasicResponse deleteUser() {
         UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
         basketService.removeBasket(userAuth.getUser());
         userRepository.delete(userAuth.getUser());

@@ -18,16 +18,13 @@ public class AuthorityServiceImpl implements AuthorityService {
     private AuthorityRepository authorityRepository;
 
     @Override
-    public BasicResponse addAuthority(String authority) {
+    public Authority addAuthority(String authority) {
         if (authority.isBlank())
             throw new IllegalArgumentException("Input cannot be blank.");
 
         Optional<Authority> authorityCheck = authorityRepository.findByAuthority(authority);
-        if (authorityCheck.isPresent())
-            return BasicResponse.builder().status(true).code(200).message("This authority is already added").build();
+        return authorityCheck.orElseGet(() -> authorityRepository.save(new Authority(authority)));
 
-        Authority newAuthority = new Authority(authority);
-        return BasicResponse.builder().status(true).code(200).message("New authority added successfully").build();
     }
 
     @Override

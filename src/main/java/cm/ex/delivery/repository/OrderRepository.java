@@ -2,6 +2,7 @@ package cm.ex.delivery.repository;
 
 import cm.ex.delivery.entity.Basket;
 import cm.ex.delivery.entity.Order;
+import cm.ex.delivery.entity.Restaurant;
 import cm.ex.delivery.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,6 +23,10 @@ public interface OrderRepository extends JpaRepository<Order, UUID>{
 
     List<Order> findByBasketId(Basket basketId);
 
-    List<Order> findByOwnerId(User ownerId);
+    List<Order> findByBuyerId(User buyer);
 
+    List<Order> listByDeliveryPersonId(User deliveryPerson);
+
+    @Query("SELECT * FROM orders")
+    List<Order> listByRestaurantId(Restaurant restaurant);
 }

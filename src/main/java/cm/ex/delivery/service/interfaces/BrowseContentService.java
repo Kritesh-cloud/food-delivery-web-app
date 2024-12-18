@@ -1,13 +1,14 @@
 package cm.ex.delivery.service.interfaces;
 
 import cm.ex.delivery.entity.BrowseContent;
+import cm.ex.delivery.request.BrowseListDto;
 import cm.ex.delivery.response.BasicResponse;
 
 import java.util.List;
 
 public interface BrowseContentService {
 
-    public BasicResponse createBrowseContent(String title, String itemType);
+    public BasicResponse createBrowseContent(BrowseListDto browseListDto);
 
     public BasicResponse addItemToBrowseContent(String browseContentId, String itemId);
 

@@ -1,6 +1,5 @@
 package cm.ex.delivery.service.interfaces;
 
-import cm.ex.delivery.entity.MenuCategory;
 import cm.ex.delivery.entity.MenuItem;
 import cm.ex.delivery.response.BasicResponse;
 

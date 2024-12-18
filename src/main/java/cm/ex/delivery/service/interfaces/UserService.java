@@ -14,11 +14,15 @@ public interface UserService {
 
     public BasicResponse logIn(User user);
 
-    public User userInfo(String userId);
+    public User userInfo();
 
-    public List<User> userList(String userId);
+    public List<User> userList();
 
-    public BasicResponse updateUser(User user, MultipartFile profileImage) throws IOException;
+    public BasicResponse updateUser(User user);
 
-    public BasicResponse deleteUser(String userId);
+    public BasicResponse updateAddUserAuthority(String newAuthority);
+
+    public BasicResponse updateRemoveUserAuthority(String newAuthority);
+
+    public BasicResponse deleteUser();
 }
