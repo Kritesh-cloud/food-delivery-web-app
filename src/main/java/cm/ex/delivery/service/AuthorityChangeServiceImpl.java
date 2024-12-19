@@ -13,9 +13,11 @@ import cm.ex.delivery.security.authentication.UserAuth;
 import cm.ex.delivery.service.interfaces.AuthorityChangeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+@Service
 public class AuthorityChangeServiceImpl implements AuthorityChangeService {
 
     @Autowired

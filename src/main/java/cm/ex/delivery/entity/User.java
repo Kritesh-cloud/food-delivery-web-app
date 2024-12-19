@@ -48,4 +48,12 @@ public class User {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
+    public User(String name, String email, String password, String profileUrl, Set<Authority> authoritySet) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.profileUrl = profileUrl;
+        this.authoritySet = authoritySet;
+    }
 }

@@ -150,27 +150,27 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (checkAuthority.isEmpty())
             return BasicResponse.builder().code(401).result(false).status(false).message("no authority").build();
 
-        if (newAuthority.equalsIgnoreCase("moderator")) {
-            if (!authoritySet.contains(new Authority("admin"))) {
-                throw new AccessDeniedException("No authority");
-            }
-        }
-
-        if (newAuthority.equalsIgnoreCase("delivery")) {
-            if (!authoritySet.contains(new Authority("admin"))) {
-                throw new AccessDeniedException("No authority");
-            }
-        }
-
-        if (newAuthority.equalsIgnoreCase("staff")) {
-            if (!authoritySet.contains(new Authority("owner"))) {
-                throw new AccessDeniedException("No authority");
-            }
-        }
-
-        if (newAuthority.equalsIgnoreCase("admin")) {
-            throw new AccessDeniedException("No authority");
-        }
+//        if (newAuthority.equalsIgnoreCase("moderator")) {
+//            if (!authoritySet.contains(new Authority("admin"))) {
+//                throw new AccessDeniedException("No authority");
+//            }
+//        }
+//
+//        if (newAuthority.equalsIgnoreCase("delivery")) {
+//            if (!authoritySet.contains(new Authority("admin"))) {
+//                throw new AccessDeniedException("No authority");
+//            }
+//        }
+//
+//        if (newAuthority.equalsIgnoreCase("staff")) {
+//            if (!authoritySet.contains(new Authority("owner"))) {
+//                throw new AccessDeniedException("No authority");
+//            }
+//        }
+//
+//        if (newAuthority.equalsIgnoreCase("admin")) {
+//            throw new AccessDeniedException("No authority");
+//        }
 
         Authority authority = authorityService.addAuthority(newAuthority);
 

@@ -16,7 +16,9 @@ import java.util.UUID;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, UUID>{
 
-    @Query("SELECT o FROM Order o WHERE o.ownerId = :userId AND o.active = true")
+//    @Query("SELECT o FROM Order o WHERE o.ownerId = :userId AND o.active = true")
+//    @Query("SELECT * FROM orders o WHERE o.")
+    @Query("SELECT o FROM Order o WHERE o.buyer = :userId AND o.active = true")
     Optional<Order> findActiveOrderByUserId(@Param("userId") User userId);
 
     List<Order> findAllByStatus(String status);
@@ -25,8 +27,8 @@ public interface OrderRepository extends JpaRepository<Order, UUID>{
 
     List<Order> findByBuyerId(User buyer);
 
-    List<Order> listByDeliveryPersonId(User deliveryPerson);
+    List<Order> findByDeliveryPersonId(User deliveryPerson);
 
-    @Query("SELECT * FROM orders")
+    @Query(value = "SELECT * FROM orders", nativeQuery = true)
     List<Order> listByRestaurantId(Restaurant restaurant);
 }

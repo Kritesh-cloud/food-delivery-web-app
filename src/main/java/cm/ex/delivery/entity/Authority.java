@@ -18,7 +18,15 @@ public class Authority {
 
     private String authority;
 
-    public Authority(String authority) {
+    private String requestAuthority;
+
+    private int level;
+
+    private String authorityAccept;
+
+    public Authority(String authority, int level, String authorityAccept) {
         this.authority = authority;
+        this.level = level;
+        this.authorityAccept = authorityAccept;
     }
 }

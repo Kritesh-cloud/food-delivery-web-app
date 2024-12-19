@@ -79,7 +79,7 @@ public class OrderServiceImpl implements OrderService {
         UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
         verifyDeliveryAccount();
         User deliveryId = userAuth.getUser();
-        List<Order> orderList = orderRepository.listByDeliveryPersonId(deliveryId);
+        List<Order> orderList = orderRepository.findByDeliveryPersonId(deliveryId);
         return orderList.isEmpty() ? List.of() : orderList;
     }
 
