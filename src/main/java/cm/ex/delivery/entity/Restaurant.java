@@ -47,6 +47,12 @@ public class Restaurant {
     private User ownerId;
 
     @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "restaurant__staff__user",
+            joinColumns = @JoinColumn(name = "restaurant_id", updatable = true),
+            inverseJoinColumns = @JoinColumn(name = "staff_id", updatable = true))
+    private Set<User> staffSet;
+
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "restaurant__category",
             joinColumns = @JoinColumn(name = "restaurant_id", updatable = true),
             inverseJoinColumns = @JoinColumn(name = "category_id", updatable = true))

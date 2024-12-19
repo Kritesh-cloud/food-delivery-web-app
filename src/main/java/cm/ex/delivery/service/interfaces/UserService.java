@@ -18,11 +18,19 @@ public interface UserService {
 
     public List<User> userList();
 
+    public List<User> listUserByAuthority(String authority);
+
+    public BasicResponse assignAuthority(String authority, String userId);
+
+    public BasicResponse removeAuthority(String authority, String userId);
+
     public BasicResponse updateUser(User user);
-
-    public BasicResponse updateAddUserAuthority(String newAuthority);
-
-    public BasicResponse updateRemoveUserAuthority(String newAuthority);
 
     public BasicResponse deleteUser();
 }
+
+/*
+public BasicResponse assignAuthority(String authority, String userId);
+public BasicResponse removeAuthority(String authority, String userId);
+public List<User> listUserByAuthority(String authority);
+*/

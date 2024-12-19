@@ -3,7 +3,7 @@ package cm.ex.delivery.controller;
 import cm.ex.delivery.entity.MenuCategory;
 import cm.ex.delivery.entity.MenuItem;
 import cm.ex.delivery.entity.Restaurant;
-import cm.ex.delivery.entity.restaurant.UpdateRestaurant;
+import cm.ex.delivery.request.UpdateRestaurant;
 import cm.ex.delivery.response.BasicResponse;
 import cm.ex.delivery.service.MenuCategoryServiceImpl;
 import cm.ex.delivery.service.MenuItemServiceImpl;

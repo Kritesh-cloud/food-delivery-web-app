@@ -1,10 +1,8 @@
 package cm.ex.delivery.controller;
 
-import cm.ex.delivery.entity.AuthorityChange;
 import cm.ex.delivery.entity.Category;
 import cm.ex.delivery.entity.User;
 import cm.ex.delivery.response.BasicResponse;
-import cm.ex.delivery.service.AuthorityChangeServiceImpl;
 import cm.ex.delivery.service.CategoryServiceImpl;
 import cm.ex.delivery.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +21,6 @@ public class AdminController {
 
     @Autowired
     private CategoryServiceImpl categoryService;
-
-    @Autowired
-    private AuthorityChangeServiceImpl authorityChangeService;
 
     @PostMapping("/test")
     public ResponseEntity<BasicResponse> test() {
@@ -52,33 +47,21 @@ public class AdminController {
         return ResponseEntity.status(HttpStatusCode.valueOf(418)).body(categoryService.removeCategory(category));
     }
 
-    @PostMapping("/listRequestAuthority")
-    public ResponseEntity<List<AuthorityChange>> listRequestAuthority() {
-        List<AuthorityChange> authorityChangeList = authorityChangeService.listAllAuthorityChangeRequest();
-        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(authorityChangeList);
+    @PostMapping("/listUserByAuthority")
+    public ResponseEntity<List<User>> listUserByAuthority(String authority) {
+        List<User> userList = userService.listUserByAuthority(authority);
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(userList);
     }
 
-    @PostMapping("/listRequestAuthorityByRestaurant/{restaurantId}")
-    public ResponseEntity<List<AuthorityChange>> listRequestAuthorityByRestaurantId(@PathVariable String restaurantId) {
-        List<AuthorityChange> authorityChangeList = authorityChangeService.listAllAuthorityChangeRequestByRestaurant(restaurantId);
-        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(authorityChangeList);
-    }
-
-    @PostMapping("/authorityUpdateRequest")
-    public ResponseEntity<BasicResponse> authorityUpdateRequest(
-            @RequestParam String newAuthority,
-            @RequestParam(value = "restaurantId", defaultValue = "null") String restaurantId) {
-        BasicResponse basicResponse = authorityChangeService.requestAuthorityChange(newAuthority, restaurantId);
+    @PostMapping("/assignAuthority")
+    public ResponseEntity<BasicResponse> assignAuthority(@RequestParam String authority, @RequestParam String userId) {
+        BasicResponse basicResponse = userService.assignAuthority(authority, userId);
         return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
     }
 
-    @PostMapping("/authorityUpdate")
-    public ResponseEntity<BasicResponse> authorityUpdate(
-            @RequestParam String userId,
-            @RequestParam String newAuthority,
-            @RequestParam boolean change) {
-        BasicResponse basicResponse = authorityChangeService.authorityChangeUpdate(userId, newAuthority, change);
+    @PostMapping("/removeAuthority")
+    public ResponseEntity<BasicResponse> removeAuthority(@RequestParam String authority, @RequestParam String userId) {
+        BasicResponse basicResponse = userService.removeAuthority(authority, userId);
         return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
     }
-
 }

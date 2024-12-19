@@ -2,7 +2,7 @@ package cm.ex.delivery.service.interfaces;
 
 import cm.ex.delivery.entity.Restaurant;
 import cm.ex.delivery.entity.User;
-import cm.ex.delivery.entity.restaurant.UpdateRestaurant;
+import cm.ex.delivery.request.UpdateRestaurant;
 import cm.ex.delivery.response.BasicResponse;
 import org.springframework.web.multipart.MultipartFile;
 

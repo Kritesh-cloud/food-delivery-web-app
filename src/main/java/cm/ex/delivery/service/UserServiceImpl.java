@@ -2,8 +2,10 @@ package cm.ex.delivery.service;
 
 import cm.ex.delivery.entity.Authority;
 import cm.ex.delivery.entity.Image;
+import cm.ex.delivery.entity.Restaurant;
 import cm.ex.delivery.entity.User;
 import cm.ex.delivery.repository.AuthorityRepository;
+import cm.ex.delivery.repository.RestaurantRepository;
 import cm.ex.delivery.repository.UserRepository;
 import cm.ex.delivery.response.BasicResponse;
 import cm.ex.delivery.security.authentication.UserAuth;
@@ -22,10 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -35,6 +34,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RestaurantServiceImpl restaurantService;
 
     @Autowired
     private AuthorityRepository authorityRepository;
@@ -53,6 +55,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Autowired
     private BasketServiceImpl basketService;
+
+    @Autowired
+    private RestaurantRepository restaurantRepository;
 
     @Override
     public BasicResponse signUp(User user, MultipartFile profileImage) throws IOException {
@@ -93,6 +98,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public User userInfo() {
         UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
         User user = userAuth.getUser();
+        //remove password from user
         return User.builder()
                 .id(user.getId())
                 .name(user.getName())
@@ -100,6 +106,88 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 .profileUrl(user.getProfileUrl())
                 .authoritySet(user.getAuthoritySet())
                 .build();
+    }
+
+    @Override
+    public List<User> listUserByAuthority(String authority) {
+        UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
+
+        Set<Authority> authoritySet = userAuth.getUser().getAuthoritySet();
+        Authority highestLevelAuthority = authoritySet.stream()
+                .max(Comparator.comparingInt(Authority::getLevel))
+                .orElse(null);
+        int userHighestLevel = highestLevelAuthority == null ? 0 : highestLevelAuthority.getLevel();
+
+        Optional<Authority> requestedAuthority = authorityRepository.findByAuthority(authority);
+        if (requestedAuthority.isEmpty()) throw new NoSuchElementException("Authority not found");
+        int requestedAuthorityLevel = requestedAuthority.get().getLevel();
+
+        if (userHighestLevel <= requestedAuthorityLevel) throw new AccessDeniedException("Not enough authority level");
+
+        List<User> userList = userRepository.listByUserAuthority(authority);
+
+        //remove password from user
+        List<User> newUserList = userList.stream()
+                .map(user -> {
+                    return User.builder()
+                            .id(user.getId())
+                            .name(user.getName())
+                            .email(user.getEmail())
+                            .profileUrl(user.getProfileUrl())
+                            .authoritySet(user.getAuthoritySet())
+                            .build();
+                })
+                .toList();
+
+        return newUserList.isEmpty() ? List.of() : userList;
+    }
+
+    @Override
+    public BasicResponse assignAuthority(String authority, String userId) {
+        UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
+        Optional<User> user = userRepository.findById(UUID.fromString(userId));
+        if (user.isEmpty()) throw new UsernameNotFoundException("User not found");
+
+        Authority newAuthority = checkForAuthorityUpdate(authority);
+
+        if (authority.equalsIgnoreCase("staff")) {
+            Restaurant restaurant = restaurantService.getRestaurantByOwnerId(userAuth.getUser());
+            Set<User> staffSet = restaurant.getStaffSet();
+            staffSet.add(user.get());
+            restaurant.setStaffSet(staffSet);
+            restaurantRepository.save(restaurant);
+        }
+
+        Set<Authority> authoritySet = user.get().getAuthoritySet();
+        authoritySet.add(newAuthority);
+        user.get().setAuthoritySet(authoritySet);
+
+        userRepository.save(user.get());
+        return BasicResponse.builder().status(true).code(200).message("Authority assigned successfully").build();
+    }
+
+    @Override
+    public BasicResponse removeAuthority(String authority, String userId) {
+        UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
+        Optional<User> user = userRepository.findById(UUID.fromString(userId));
+        if (user.isEmpty()) throw new UsernameNotFoundException("User not found");
+
+        Authority newAuthority = checkForAuthorityUpdate(authority);
+
+        if (authority.equalsIgnoreCase("staff")) {
+            Restaurant restaurant = restaurantService.getRestaurantByOwnerId(userAuth.getUser());
+            Set<User> staffSet = restaurant.getStaffSet();
+            staffSet.remove(user.get());
+            restaurant.setStaffSet(staffSet);
+            restaurantRepository.save(restaurant);
+        }
+
+        Set<Authority> authoritySet = user.get().getAuthoritySet();
+        authoritySet.remove(newAuthority);
+        user.get().setAuthoritySet(authoritySet);
+
+        userRepository.save(user.get());
+        return BasicResponse.builder().status(true).code(200).message("Authority removed successfully").build();
     }
 
     @Override
@@ -142,46 +230,46 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return BasicResponse.builder().status(true).code(200).message("User account updated successfully").build();
     }
 
-    @Override
-    public BasicResponse updateAddUserAuthority(String newAuthority) {
-        UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
-        Set<Authority> authoritySet = userAuth.getUser().getAuthoritySet();
-        Optional<Authority> checkAuthority = authorityRepository.findByAuthority(newAuthority);
-        if (checkAuthority.isEmpty())
-            return BasicResponse.builder().code(401).result(false).status(false).message("no authority").build();
-
-//        if (newAuthority.equalsIgnoreCase("moderator")) {
-//            if (!authoritySet.contains(new Authority("admin"))) {
-//                throw new AccessDeniedException("No authority");
-//            }
-//        }
+//    @Override
+//    public BasicResponse updateAddUserAuthority(String newAuthority) {
+//        UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
+//        Set<Authority> authoritySet = userAuth.getUser().getAuthoritySet();
+//        Optional<Authority> checkAuthority = authorityRepository.findByAuthority(newAuthority);
+//        if (checkAuthority.isEmpty())
+//            return BasicResponse.builder().code(401).result(false).status(false).message("no authority").build();
 //
-//        if (newAuthority.equalsIgnoreCase("delivery")) {
-//            if (!authoritySet.contains(new Authority("admin"))) {
-//                throw new AccessDeniedException("No authority");
-//            }
-//        }
+
+    /// /        if (newAuthority.equalsIgnoreCase("moderator")) {
+    /// /            if (!authoritySet.contains(new Authority("admin"))) {
+    /// /                throw new AccessDeniedException("No authority");
+    /// /            }
+    /// /        }
+    /// /
+    /// /        if (newAuthority.equalsIgnoreCase("delivery")) {
+    /// /            if (!authoritySet.contains(new Authority("admin"))) {
+    /// /                throw new AccessDeniedException("No authority");
+    /// /            }
+    /// /        }
+    /// /
+    /// /        if (newAuthority.equalsIgnoreCase("staff")) {
+    /// /            if (!authoritySet.contains(new Authority("owner"))) {
+    /// /                throw new AccessDeniedException("No authority");
+    /// /            }
+    /// /        }
+    /// /
+    /// /        if (newAuthority.equalsIgnoreCase("admin")) {
+    /// /            throw new AccessDeniedException("No authority");
+    /// /        }
 //
-//        if (newAuthority.equalsIgnoreCase("staff")) {
-//            if (!authoritySet.contains(new Authority("owner"))) {
-//                throw new AccessDeniedException("No authority");
-//            }
-//        }
+//        Authority authority = authorityService.addAuthority(newAuthority);
 //
-//        if (newAuthority.equalsIgnoreCase("admin")) {
-//            throw new AccessDeniedException("No authority");
-//        }
-
-        Authority authority = authorityService.addAuthority(newAuthority);
-
-        return BasicResponse.builder().code(200).result(true).status(true).message("Authority updated successfully").build();
-    }
-
-    @Override
-    public BasicResponse updateRemoveUserAuthority(String newAuthority) {
-        return null;
-    }
-
+//        return BasicResponse.builder().code(200).result(true).status(true).message("Authority updated successfully").build();
+//    }
+//
+//    @Override
+//    public BasicResponse updateRemoveUserAuthority(String newAuthority) {
+//        return null;
+//    }
     @Override
     public BasicResponse deleteUser() {
         UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
@@ -225,5 +313,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return null;
     }
 
+    private Authority checkForAuthorityUpdate(String authority) {
+        UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
+        Optional<Authority> newAuthority = authorityRepository.findByAuthority(authority);
+        if (newAuthority.isEmpty()) throw new IllegalArgumentException("Authority cannot be blank.");
+
+        Set<Authority> higherAuthoritySet = userAuth.getUser().getAuthoritySet();
+        Optional<Authority> checkAuthority = authorityRepository.findByAuthority(newAuthority.get().getAuthorityAccept());
+        if (checkAuthority.isEmpty()) throw new IllegalArgumentException("Authority not found.");
+
+        if (!higherAuthoritySet.contains(checkAuthority.get()))
+            throw new AccessDeniedException("Access denied for authority update");
+        return newAuthority.get();
+    }
 
 }

@@ -3,7 +3,7 @@ package cm.ex.delivery.service;
 import cm.ex.delivery.entity.Image;
 import cm.ex.delivery.entity.Restaurant;
 import cm.ex.delivery.entity.User;
-import cm.ex.delivery.entity.restaurant.UpdateRestaurant;
+import cm.ex.delivery.request.UpdateRestaurant;
 import cm.ex.delivery.repository.*;
 import cm.ex.delivery.response.BasicResponse;
 import cm.ex.delivery.security.authentication.UserAuth;

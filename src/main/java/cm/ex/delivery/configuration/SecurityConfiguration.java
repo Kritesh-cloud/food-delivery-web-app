@@ -1,6 +1,5 @@
 package cm.ex.delivery.configuration;
 
-
 import cm.ex.delivery.security.filter.AuthenticationFilter;
 import cm.ex.delivery.security.filter.AuthorizationFilter;
 import org.slf4j.Logger;

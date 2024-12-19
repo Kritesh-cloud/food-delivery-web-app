@@ -1,4 +1,4 @@
-package cm.ex.delivery.entity.restaurant;
+package cm.ex.delivery.request;
 
 import lombok.*;
 
