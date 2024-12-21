@@ -7,8 +7,10 @@ import cm.ex.delivery.repository.MenuCategoryRepository;
 import cm.ex.delivery.repository.MenuItemRepository;
 import cm.ex.delivery.repository.RestaurantRepository;
 import cm.ex.delivery.response.BasicResponse;
+import cm.ex.delivery.response.MenuItemResponse;
 import cm.ex.delivery.security.authentication.UserAuth;
 import cm.ex.delivery.service.interfaces.MenuItemService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -28,9 +30,12 @@ public class MenuItemServiceImpl implements MenuItemService {
     @Autowired
     private RestaurantRepository restaurantRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
-    public BasicResponse addMenuItem(String menuItem, String menuCategoryName, double price) {
-        Optional<MenuCategory> menuCategory = menuCategoryRepository.findByNameAndRestaurant(menuCategoryName, getRestaurant());
+    public BasicResponse addMenuItem(String menuItem, String menuCategoryId, double price) {
+        Optional<MenuCategory> menuCategory = menuCategoryRepository.findByIdAndRestaurant(menuCategoryId, getRestaurant());
         if (menuCategory.isEmpty()) throw new NoSuchElementException("Menu Category not found");
 
         List<MenuItem> menuItemList = menuItemRepository.findByMenuCategory(menuCategory.get());
@@ -41,11 +46,20 @@ public class MenuItemServiceImpl implements MenuItemService {
     }
 
     @Override
-    public List<MenuItem> listMenuItemByOrder(String menuCategoryName) {
+    public List<MenuItemResponse> listMenuItemByOrder(String menuCategoryName) {
+        System.out.println("menuCategoryName: "+menuCategoryName);
         Optional<MenuCategory> menuCategory = menuCategoryRepository.findByNameAndRestaurant(menuCategoryName, getRestaurant());
         if (menuCategory.isEmpty()) throw new NoSuchElementException("Menu Category not found");
 
-        return menuItemRepository.findByMenuCategoryOrdered(menuCategory.get());
+        List<MenuItem> menuItemList = menuItemRepository.findByMenuCategoryOrdered(menuCategory.get());
+        return  menuItemList.stream().map(
+                menuItem -> {
+                    MenuItemResponse menuItemResponse = modelMapper.map(menuItem,MenuItemResponse.class);
+                    menuItemResponse.setMenuCategoryId(String.valueOf(menuItem.getMenuCategory().getId()));
+                    return menuItemResponse;
+                }
+        ).toList();
+//        MenuItemResponse
     }
 
     @Override
@@ -54,6 +68,15 @@ public class MenuItemServiceImpl implements MenuItemService {
         if (menuItem.isEmpty()) throw new NoSuchElementException("Menu Item not found");
 
         return menuItem.get();
+    }
+
+    @Override
+    public MenuItemResponse getByIdResponse(String id){
+        Optional<MenuItem> menuItem = menuItemRepository.findById((long) Integer.parseInt(id));
+        if (menuItem.isEmpty()) throw new NoSuchElementException("Menu Item not found");
+        MenuItemResponse menuItemResponse = modelMapper.map(menuItem.get(),MenuItemResponse.class);
+        menuItemResponse.setMenuCategoryId(String.valueOf(menuItem.get().getMenuCategory().getId()));
+        return menuItemResponse;
     }
 
     @Override

@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "authority")
 @Getter
@@ -19,6 +22,7 @@ public class Authority {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+//    @Column(unique = true, nullable = false)
     private String authority;
 
     private String requestAuthority;
@@ -26,6 +30,9 @@ public class Authority {
     private int level;
 
     private String authorityAccept;
+
+//    @ManyToMany(mappedBy = "authoritySet")
+//    private Set<User> users = new HashSet<>();
 
     public Authority(String authority, int level, String authorityAccept) {
         this.authority = authority;

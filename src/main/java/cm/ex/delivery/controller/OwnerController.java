@@ -5,9 +5,12 @@ import cm.ex.delivery.entity.MenuItem;
 import cm.ex.delivery.entity.Restaurant;
 import cm.ex.delivery.request.UpdateRestaurant;
 import cm.ex.delivery.response.BasicResponse;
+import cm.ex.delivery.response.MenuCategoryResponse;
+import cm.ex.delivery.response.MenuItemResponse;
 import cm.ex.delivery.service.MenuCategoryServiceImpl;
 import cm.ex.delivery.service.MenuItemServiceImpl;
 import cm.ex.delivery.service.RestaurantServiceImpl;
+import cm.ex.delivery.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +32,9 @@ public class OwnerController {
 
     @Autowired
     private MenuItemServiceImpl menuItemService;
+
+    @Autowired
+    private UserServiceImpl userService;
 
     @PostMapping("/test")
     public ResponseEntity<BasicResponse> test() {
@@ -73,25 +79,30 @@ public class OwnerController {
     }
 
     @GetMapping("/list-menu-category")
-    public ResponseEntity<List<MenuCategory>> listMenuCategory() throws AccessDeniedException {
+    public ResponseEntity<List<MenuCategoryResponse>> listMenuCategory() throws AccessDeniedException {
         return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(menuCategoryService.listMenuCategoryByOrder());
     }
 
     @PostMapping("/delete-menu-category")
-    public ResponseEntity<BasicResponse> deleteMenuCategory(@RequestParam String menuCategory) {
-        BasicResponse basicResponse = menuCategoryService.removeMenuCategory(menuCategory);
+    public ResponseEntity<BasicResponse> deleteMenuCategory(@RequestParam String menuCategoryId) {
+        BasicResponse basicResponse = menuCategoryService.removeMenuCategory(menuCategoryId);
         return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
     }
 
     @PostMapping("/add-menu-item")
-    public ResponseEntity<BasicResponse> addMenuItem(@RequestParam String menuItem, @RequestParam String menuCategoryName, @RequestParam double price) {
-        BasicResponse basicResponse = menuItemService.addMenuItem(menuItem, menuCategoryName, price);
+    public ResponseEntity<BasicResponse> addMenuItem(@RequestParam String menuItem, @RequestParam String menuCategoryId, @RequestParam double price) {
+        BasicResponse basicResponse = menuItemService.addMenuItem(menuItem, menuCategoryId, price);
         return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
     }
 
     @GetMapping("/list-menu-item")
-    public ResponseEntity<List<MenuItem>> listMenuItem(@RequestParam String menuCategoryName) {
+    public ResponseEntity<List<MenuItemResponse>> listMenuItem(@RequestParam String menuCategoryName) {
         return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(menuItemService.listMenuItemByOrder(menuCategoryName));
+    }
+
+    @GetMapping("/get-menu-item/{menuItemId}")
+    public ResponseEntity<MenuItemResponse> getMenuItemById(@PathVariable String menuItemId) {
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(menuItemService.getByIdResponse(menuItemId));
     }
 
     @PostMapping("/update-menu-item")
@@ -102,6 +113,18 @@ public class OwnerController {
     @PostMapping("/delete-menu-item/{menuItemId}")
     public ResponseEntity<BasicResponse> deleteMenuItem(@PathVariable String menuItemId) throws AccessDeniedException {
         BasicResponse basicResponse = menuItemService.removeByItemId(menuItemId);
-        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(new BasicResponse("I'm a Tea pot"));
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(basicResponse);
+    }
+
+    @PostMapping("/assign-authority")
+    public ResponseEntity<BasicResponse> assignAuthority(@RequestParam String authority, @RequestParam String userId) {
+        BasicResponse basicResponse = userService.assignAuthority(authority, userId);
+        return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
+    }
+
+    @PostMapping("/remove-authority")
+    public ResponseEntity<BasicResponse> removeAuthority(@RequestParam String authority, @RequestParam String userId) {
+        BasicResponse basicResponse = userService.removeAuthority(authority, userId);
+        return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
     }
 }

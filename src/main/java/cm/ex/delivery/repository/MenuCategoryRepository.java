@@ -33,4 +33,10 @@ public interface MenuCategoryRepository extends JpaRepository<MenuCategory, Long
             @Param("restaurantId") Restaurant restaurantId
     );
 
+    @Query("SELECT mc FROM MenuCategory mc WHERE mc.id = :id AND mc.restaurantId = :restaurantId")
+    Optional<MenuCategory> findByIdAndRestaurant(
+            @Param("id") String id,
+            @Param("restaurantId") Restaurant restaurantId
+    );
+
 }

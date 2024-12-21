@@ -5,8 +5,10 @@ import cm.ex.delivery.entity.Restaurant;
 import cm.ex.delivery.repository.MenuCategoryRepository;
 import cm.ex.delivery.repository.RestaurantRepository;
 import cm.ex.delivery.response.BasicResponse;
+import cm.ex.delivery.response.MenuCategoryResponse;
 import cm.ex.delivery.security.authentication.UserAuth;
 import cm.ex.delivery.service.interfaces.MenuCategoryService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,9 @@ public class MenuCategoryServiceImpl implements MenuCategoryService {
     @Autowired
     private RestaurantRepository restaurantRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
     public BasicResponse addMenuCategory(String category) throws AccessDeniedException {
         UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
@@ -32,28 +37,43 @@ public class MenuCategoryServiceImpl implements MenuCategoryService {
 
         if (category.isBlank()) throw new IllegalArgumentException("Input cannot be blank.");
 
-        Optional<MenuCategory> menuCategoryCheck = menuCategoryRepository.findByName(category);
 
         List<MenuCategory> menuCategoryList = menuCategoryRepository.findByRestaurantOrdered(restaurant.get());
 
-        if (menuCategoryCheck.isPresent())
-            return BasicResponse.builder().status(true).code(200).message("This menu category is already added").build();
+        for(MenuCategory menuCategory: menuCategoryList){
+            if(menuCategory.getName().equalsIgnoreCase(category)){
+                return BasicResponse.builder().status(true).code(200).message("This menu category is already added").build();
+            }
+        }
+
+//        List<MenuCategory> menuCategoryList = menuCategoryRepository.findByRestaurantOrdered(restaurant.get());
+
+//        if (menuCategoryCheck.isPresent())
+//            return BasicResponse.builder().status(true).code(200).message("This menu category is already added").build();
 
         int menuCategoryOrder = menuCategoryList.isEmpty() ? 1 : menuCategoryList.get(menuCategoryList.size() - 1).getCategoryOrder() + 1;
 
         MenuCategory newCategory = new MenuCategory(menuCategoryOrder, category, restaurant.get());
+        menuCategoryRepository.save(newCategory);
         return BasicResponse.builder().status(true).code(200).message("New menu category added successfully").build();
     }
 
     @Override
-    public List<MenuCategory> listMenuCategoryByOrder() throws AccessDeniedException {
+    public List<MenuCategoryResponse> listMenuCategoryByOrder() throws AccessDeniedException {
         UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
 
         Optional<Restaurant> restaurant = restaurantRepository.findByOwnerId(userAuth.getUser());
         if (restaurant.isEmpty()) throw new NoSuchElementException("Restaurant for this user not found");
 
         List<MenuCategory> menuCategoryList = menuCategoryRepository.findByRestaurantOrdered(restaurant.get());
-        return menuCategoryList.isEmpty() ? new ArrayList<>() : menuCategoryList;
+        List<MenuCategoryResponse> menuCategoryResponses = menuCategoryList.stream().map(
+                menuCategory -> {
+                    MenuCategoryResponse menuCategoryResponse = modelMapper.map(menuCategory,MenuCategoryResponse.class);
+                    menuCategoryResponse.setRestaurantId(String.valueOf(menuCategory.getRestaurantId().getId()));
+                    return menuCategoryResponse;
+                }
+        ).toList();
+        return menuCategoryResponses.isEmpty() ? new ArrayList<>() : menuCategoryResponses;
     }
 
     @Override
@@ -82,8 +102,8 @@ public class MenuCategoryServiceImpl implements MenuCategoryService {
     }
 
     @Override
-    public BasicResponse removeMenuCategory(String category) {
-        Optional<MenuCategory> menuCategoryCheck = menuCategoryRepository.findByName(category);
+    public BasicResponse removeMenuCategory(String menuCategoryId) {
+        Optional<MenuCategory> menuCategoryCheck = menuCategoryRepository.findById(Long.valueOf(menuCategoryId));
         if (menuCategoryCheck.isEmpty())
             return BasicResponse.builder().status(false).code(404).message("MenuCategory not found").build();
 

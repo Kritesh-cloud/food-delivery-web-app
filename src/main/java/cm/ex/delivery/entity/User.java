@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -34,11 +35,13 @@ public class User {
 
     private LocalDateTime updatedAt;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user__authorities",
-            joinColumns = @JoinColumn(name = "user_id", updatable = true),
-            inverseJoinColumns = @JoinColumn(name = "authority_id", updatable = true))
-    private Set<Authority> authoritySet;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
+    @JoinTable(
+            name = "user__authorities",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "authority_id")
+    )
+    private Set<Authority> authoritySet = new HashSet<>();
 
     @PrePersist
     protected void onCreate() {

@@ -125,19 +125,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         checkForAuthorityLevel(authority);
         Optional<Authority> newAuthority = authorityRepository.findByAuthority(authority);
-        if (authority.equalsIgnoreCase("staff")) {
-            Restaurant restaurant = restaurantService.getOwnerRestaurant();
-            Set<User> staffSet = restaurant.getStaffSet();
-            staffSet.add(user.get());
-            restaurant.setStaffSet(staffSet);
-            restaurantRepository.save(restaurant);
-        }
 
         Set<Authority> authoritySet = user.get().getAuthoritySet();
         authoritySet.add(newAuthority.get());
         user.get().setAuthoritySet(authoritySet);
 
-        userRepository.save(user.get());
+        User savedUser = userRepository.save(user.get());
+
+        if (authority.equalsIgnoreCase("staff")) {
+            Restaurant restaurant = restaurantService.getOwnerRestaurant();
+//            Set<User> staffSet = restaurant.getStaffSet();
+//            staffSet.add(savedUser);
+//            restaurant.setStaffSet(staffSet);
+            restaurantRepository.save(restaurant);
+        }
         return BasicResponse.builder().status(true).result(true).code(200).message("Authority assigned successfully").build();
     }
 
@@ -152,9 +153,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         if (authority.equalsIgnoreCase("staff")) {
             Restaurant restaurant = restaurantService.getOwnerRestaurant();
-            Set<User> staffSet = restaurant.getStaffSet();
-            staffSet.remove(user.get());
-            restaurant.setStaffSet(staffSet);
+//            Set<String> staffSet = restaurant.getStaffSet();
+//            staffSet.remove(user.get());
+//            restaurant.setStaffSet(staffSet);
             restaurantRepository.save(restaurant);
         }
 
@@ -314,14 +315,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     public void checkForAuthorityLevel(String authority){
         UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
-
+//        System.out.println("checkForAuthorityLevel");
         Set<Authority> authoritySet = userAuth.getUser().getAuthoritySet();
         Authority highestLevelAuthority = authoritySet.stream()
                 .min(Comparator.comparingInt(Authority::getLevel))
                 .orElse(null);
+//        System.out.println("logged in user : "+highestLevelAuthority.toString());
         int userHighestLevel = highestLevelAuthority == null ? 0 : highestLevelAuthority.getLevel();
         Optional<Authority> requestedAuthority = authorityRepository.findByAuthority(authority);
         if (requestedAuthority.isEmpty()) throw new NoSuchElementException("Authority not found");
+//        System.out.println("request in user : "+requestedAuthority.get().toString());
         int requestedAuthorityLevel = requestedAuthority.get().getLevel();
         if (userHighestLevel >= requestedAuthorityLevel) throw new AccessDeniedException("Not enough authority level");
     }

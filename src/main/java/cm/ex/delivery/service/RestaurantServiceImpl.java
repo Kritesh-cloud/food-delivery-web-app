@@ -40,10 +40,12 @@ public class RestaurantServiceImpl implements RestaurantService {
         List<String> validateList = new ArrayList<>(List.of("new restaurant", "icon image", "background image", "gallery"));
         validateRestaurant(restaurantInfo, new UpdateRestaurant(), validateList, icon, background, gallery);
 
-        Optional<Authority> newAuthority = authorityRepository.findByAuthority("owner");
+        Optional<Authority> newAuthorityOwner = authorityRepository.findByAuthority("owner");
+        Optional<Authority> newAuthorityStaff = authorityRepository.findByAuthority("staff");
 
         Set<Authority> authoritySet = userAuth.getUser().getAuthoritySet();
-        authoritySet.add(newAuthority.get());
+        authoritySet.add(newAuthorityOwner.get());
+        authoritySet.add(newAuthorityStaff.get());
         userAuth.getUser().setAuthoritySet(authoritySet);
 
         String path = "http://localhost:8080/image/";
@@ -167,37 +169,29 @@ public class RestaurantServiceImpl implements RestaurantService {
     public BasicResponse removeRestaurant() {
         UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
 
-
         User user = userAuth.getUser();
-        // Find authority to remove
-        Authority authorityToRemove = authorityRepository.findByAuthority("owner")
-                .orElseThrow(() -> new RuntimeException("Authority not found"));
 
-// Remove the authority from the user's set
-        user.getAuthoritySet().remove(authorityToRemove);
+        Set<Authority> authoritySet = new HashSet<>();
+        Optional<Authority> authorityUser = authorityRepository.findByAuthority("user");
+        authoritySet.add(authorityUser.get());
 
-// Save the updated user (removes the association in the join table)
-        userRepository.save(user);
-//        Set<Authority> authoritySet = user.getAuthoritySet();
-//        Optional<Authority> authorityToRemove = authorityRepository.findByAuthority("owner");
-//
-//        System.out.println("authorityToRemove: "+authorityToRemove.get().getAuthority());
-//
-//        Set<Authority> newAuthoritySet =  authoritySet.stream().filter(authority -> {
-//            return !authority.getAuthority().equals("owner");
-//        }).collect(Collectors.toSet());
-//
-//        for(Authority a : newAuthoritySet){
-//            System.out.println("newAuthoritySet : "+a.getAuthority());
-//        }
-//        user.setAuthoritySet(Set.of());
-//        user.setAuthoritySet(authoritySet);
+
+
+        for(Authority a : user.getAuthoritySet()){
+            System.out.println("filtered user authority : "+a.getAuthority());
+        }
+
+        user.setAuthoritySet(Set.of());
+        System.out.println("cleared");
         for(Authority a : user.getAuthoritySet()){
             System.out.println("user authority : "+a.getAuthority());
         }
-//
-//        userRepository.save(user);
-
+        System.out.println("re");
+        user.setAuthoritySet(authoritySet);
+        for(Authority a : user.getAuthoritySet()){
+            System.out.println("user authority : "+a.getAuthority());
+        }
+        userRepository.save(user);
         restaurantRepository.delete(getRestaurant());
         return BasicResponse.builder().status(true).code(200).message("Restaurant account deleted successfully").build();
     }
