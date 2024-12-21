@@ -19,7 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/owner")
-public class RestaurantOwnerController {
+public class OwnerController {
 
     @Autowired
     private RestaurantServiceImpl restaurantService;
@@ -32,76 +32,76 @@ public class RestaurantOwnerController {
 
     @PostMapping("/test")
     public ResponseEntity<BasicResponse> test() {
-        return ResponseEntity.status(HttpStatusCode.valueOf(418)).body(new BasicResponse("I'm a Tea pot"));
+        return ResponseEntity.status(HttpStatusCode.valueOf(418)).body(new BasicResponse("I'm a Tea pot. Owner Controller Test"));
     }
 
-    @PostMapping("/registerRestaurant")
-    public ResponseEntity<BasicResponse> registerRestaurant(
-            @RequestPart("restaurantInfo") Restaurant restaurantInfo,
-            @RequestPart("icon") MultipartFile icon,
-            @RequestPart("background") MultipartFile background,
-            @RequestPart("gallery") MultipartFile... gallery) {
-        BasicResponse basicResponse = restaurantService.addRestaurant(restaurantInfo, icon, background, gallery);
-        return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
+//    @PostMapping("/registerRestaurant")
+//    public ResponseEntity<BasicResponse> registerRestaurant(
+//            @RequestPart("restaurantInfo") Restaurant restaurantInfo,
+//            @RequestPart("icon") MultipartFile icon,
+//            @RequestPart("background") MultipartFile background,
+//            @RequestPart("gallery") MultipartFile... gallery) {
+//        BasicResponse basicResponse = restaurantService.addRestaurant(restaurantInfo, icon, background, gallery);
+//        return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
+//    }
+
+    @GetMapping("/view-restaurant")
+    public ResponseEntity<Restaurant> viewRestaurant() {
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(restaurantService.getOwnerRestaurant());
     }
 
-    @GetMapping("/viewRestaurant/{restaurantId}")
-    public ResponseEntity<Restaurant> viewRestaurant(@PathVariable String restaurantId) {
-        return ResponseEntity.status(HttpStatusCode.valueOf(418)).body(restaurantService.getRestaurantById(restaurantId));
-    }
-
-    @PostMapping("/updateRestaurant")
+    @PostMapping("/update-restaurant")
     public ResponseEntity<BasicResponse> updateRestaurant(
             @RequestPart("restaurantInfo") UpdateRestaurant restaurantInfo,
             @RequestPart("icon") MultipartFile icon,
             @RequestPart("background") MultipartFile background,
             @RequestPart("gallery") MultipartFile... gallery) {
         BasicResponse basicResponse = restaurantService.updateRestaurant(restaurantInfo, icon, background, gallery);
-        return ResponseEntity.status(HttpStatusCode.valueOf(418)).body(basicResponse);
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(basicResponse);
     }
 
-    @PostMapping("/deleteRestaurant/{restaurantId}")
+    @PostMapping("/delete-restaurant")
     public ResponseEntity<BasicResponse> deleteRestaurant() {
         BasicResponse basicResponse = restaurantService.removeRestaurant();
         return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
     }
 
-    @PostMapping("/addMenuCategory")
+    @PostMapping("/add-menu-category")
     public ResponseEntity<BasicResponse> addMenuCategory(@RequestParam String menuCategory) throws AccessDeniedException {
         BasicResponse basicResponse = menuCategoryService.addMenuCategory(menuCategory);
         return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
     }
 
-    @GetMapping("/listMenuCategory/{restaurantId}")
-    public ResponseEntity<List<MenuCategory>> listMenuCategory(@PathVariable String restaurantId) throws AccessDeniedException {
-        return ResponseEntity.status(HttpStatusCode.valueOf(418)).body(menuCategoryService.listMenuCategoryByOrder());
+    @GetMapping("/list-menu-category")
+    public ResponseEntity<List<MenuCategory>> listMenuCategory() throws AccessDeniedException {
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(menuCategoryService.listMenuCategoryByOrder());
     }
 
-    @PostMapping("/deleteMenuCategory/{menuCategory}")
-    public ResponseEntity<BasicResponse> deleteMenuCategory(@PathVariable String menuCategory) {
+    @PostMapping("/delete-menu-category")
+    public ResponseEntity<BasicResponse> deleteMenuCategory(@RequestParam String menuCategory) {
         BasicResponse basicResponse = menuCategoryService.removeMenuCategory(menuCategory);
         return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
     }
 
-    @PostMapping("/addMenuItem")
+    @PostMapping("/add-menu-item")
     public ResponseEntity<BasicResponse> addMenuItem(@RequestParam String menuItem, @RequestParam String menuCategoryName, @RequestParam double price) {
         BasicResponse basicResponse = menuItemService.addMenuItem(menuItem, menuCategoryName, price);
         return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
     }
 
-    @GetMapping("/listMenuItem")
+    @GetMapping("/list-menu-item")
     public ResponseEntity<List<MenuItem>> listMenuItem(@RequestParam String menuCategoryName) {
-        return ResponseEntity.status(HttpStatusCode.valueOf(418)).body(menuItemService.listMenuItemByOrder(menuCategoryName));
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(menuItemService.listMenuItemByOrder(menuCategoryName));
     }
 
-    @PostMapping("/updateMenuItem")
+    @PostMapping("/update-menu-item")
     public ResponseEntity<BasicResponse> updateMenuItem(@RequestParam String menuItem) {
-        return ResponseEntity.status(HttpStatusCode.valueOf(418)).body(new BasicResponse("I'm a Tea pot"));
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(new BasicResponse("I'm a Tea pot"));
     }
 
-    @PostMapping("/deleteMenuItem/{menuItemId}")
+    @PostMapping("/delete-menu-item/{menuItemId}")
     public ResponseEntity<BasicResponse> deleteMenuItem(@PathVariable String menuItemId) throws AccessDeniedException {
         BasicResponse basicResponse = menuItemService.removeByItemId(menuItemId);
-        return ResponseEntity.status(HttpStatusCode.valueOf(418)).body(new BasicResponse("I'm a Tea pot"));
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(new BasicResponse("I'm a Tea pot"));
     }
 }

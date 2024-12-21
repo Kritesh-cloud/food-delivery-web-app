@@ -14,6 +14,8 @@ public interface RestaurantService {
 
     public Restaurant getRestaurantByOwnerId(User ownerId);
 
+    public Restaurant getOwnerRestaurant();
+
     public Restaurant getRestaurantById(String id);
 
     public List<Restaurant> listAllRestaurant();

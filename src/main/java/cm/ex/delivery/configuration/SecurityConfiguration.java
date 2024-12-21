@@ -43,6 +43,14 @@ public class SecurityConfiguration {
                         .requestMatchers("/product/list").permitAll()
                         .requestMatchers("/product/image/{imageId}").permitAll()
 
+//                        // Role-based access control
+//                        .requestMatchers("/admin/**").hasAnyAuthority("admin", "moderator", "user")
+//                        .requestMatchers("/moderator/**").hasAnyAuthority("moderator", "user")
+//                        .requestMatchers("/owner/**").hasAnyAuthority("owner", "staff", "user")
+//                        .requestMatchers("/staff/**").hasAnyAuthority("staff", "user")
+//                        .requestMatchers("/delivery/**").hasAnyAuthority("delivery", "user")
+//                        .requestMatchers("/user/**").hasAuthority("user")
+
                         .anyRequest().authenticated()
                 )
                 .build();

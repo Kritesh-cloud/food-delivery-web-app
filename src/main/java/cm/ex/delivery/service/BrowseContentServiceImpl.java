@@ -1,15 +1,18 @@
 package cm.ex.delivery.service;
 
 import cm.ex.delivery.entity.BrowseContent;
+import cm.ex.delivery.entity.IdHolder;
 import cm.ex.delivery.repository.BrowseContentRepository;
 import cm.ex.delivery.repository.IdHolderRepository;
 import cm.ex.delivery.repository.UserRepository;
 import cm.ex.delivery.request.BrowseListDto;
 import cm.ex.delivery.response.BasicResponse;
+import cm.ex.delivery.response.BrowseContentResponse;
 import cm.ex.delivery.service.interfaces.BrowseContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -22,6 +25,9 @@ public class BrowseContentServiceImpl implements BrowseContentService {
 
     @Autowired
     private IdHolderServiceImpl idHolderService;
+
+    @Autowired
+    private IdHolderRepository idHolderRepository;
 
     @Override
     public BasicResponse createBrowseContent(BrowseListDto browseListDto) {
@@ -42,9 +48,24 @@ public class BrowseContentServiceImpl implements BrowseContentService {
     }
 
     @Override
-    public List<BrowseContent> listAllBrowseContentByOrder() {
+    public List<BrowseContentResponse> listAllBrowseContentByOrder() {
         List<BrowseContent> browseContentList = browseContentRepository.findAllByContentOrderAsc();
-        return browseContentList.isEmpty() ? List.of() : browseContentList;
+        List<BrowseContentResponse> browseContentResponseList = browseContentList.stream().map(
+                browseContent -> {
+                    List<IdHolder> idHolderList = idHolderService.listIdHolderByBrowseContentId(String.valueOf(browseContent.getId()));
+                    List<String> idList = idHolderList.stream().map(IdHolder::getDataId).toList();
+
+                    BrowseContentResponse browseContentResponse = new BrowseContentResponse();
+                    browseContentResponse.setId(browseContent.getId());
+                    browseContentResponse.setContentOrder(browseContent.getContentOrder());
+                    browseContentResponse.setTitle(browseContent.getTitle());
+                    browseContentResponse.setType(browseContent.getType());
+                    browseContentResponse.setIds(idList);
+                    return browseContentResponse;
+                }
+        ).toList();
+
+        return browseContentResponseList.isEmpty() ? List.of() : browseContentResponseList;
     }
 
     @Override
@@ -74,6 +95,9 @@ public class BrowseContentServiceImpl implements BrowseContentService {
     public BasicResponse removeBrowseContentById(String browseContentId) {
         Optional<BrowseContent> browseContent = browseContentRepository.findById(Long.valueOf(browseContentId));
         if (browseContent.isEmpty()) throw new NoSuchElementException("Browse content not found");
+
+        List<IdHolder> idHolderList = idHolderService.listIdHolderByBrowseContentId(browseContentId);
+        idHolderRepository.deleteAll(idHolderList);
 
         browseContentRepository.delete(browseContent.get());
         return BasicResponse.builder().status(true).code(200).message("Browse Content deleted successfully").build();

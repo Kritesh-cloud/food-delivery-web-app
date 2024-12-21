@@ -27,7 +27,7 @@ public class OrderController {
 
     @PostMapping("/test")
     public ResponseEntity<BasicResponse> test() {
-        return ResponseEntity.status(HttpStatusCode.valueOf(418)).body(new BasicResponse("I'm a Tea pot"));
+        return ResponseEntity.status(HttpStatusCode.valueOf(418)).body(new BasicResponse("I'm a Tea pot. Authentication User Order Test"));
     }
 
     @PostMapping("/addToBasket/{menuItemId}")

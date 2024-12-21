@@ -19,6 +19,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             "FROM users u\n" +
             "JOIN user__authorities ua ON u.id = ua.user_id\n" +
             "JOIN authority a ON ua.authority_id = a.id\n" +
-            "WHERE a.authority = 'admin'")
+            "WHERE a.authority = :authority")
     List<User> listByUserAuthority(String authority);
 }

@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public BasicResponse signUp(User user, MultipartFile profileImage) throws IOException {
         Optional<User> userEmail = userRepository.findByEmail(user.getEmail());
-        if (userEmail.isEmpty())
+        if (!userEmail.isEmpty())
             return BasicResponse.builder().status(false).code(409).message("This email is already in use").build();
         Set<Authority> authorityList = authorityRepository.findByAuthority("user")
                 .map(Set::of)
@@ -73,13 +73,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         String path = "http://localhost:8080/image/";
         user.setProfileUrl(path + "dummy");
-        if (!Objects.requireNonNull(profileImage.getOriginalFilename()).isEmpty()) {
-            Image iconImage = imageService.addImage(profileImage);
-            user.setProfileUrl(path + iconImage.getId());
-        }
+//        if (!Objects.requireNonNull(profileImage.getOriginalFilename()).isEmpty()) {
+//            Image iconImage = imageService.addImage(profileImage);
+//            user.setProfileUrl(path + iconImage.getId());
+//        }
         User newUser = userRepository.save(user);
         basketService.createBasket(newUser);
-        return BasicResponse.builder().status(true).code(200).message("Account created successfully").build();
+        return BasicResponse.builder().status(true).result(true).code(200).message("Account created successfully").build();
     }
 
     @Override
@@ -88,10 +88,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (userEmail.isEmpty() || !passwordEncoder.matches(user.getPassword(), userEmail.get().getPassword()))
             return BasicResponse.builder().status(false).code(401).message("Email or password doesn't match").build();
 
-        UserAuth userAuth = new UserAuth(user.getId().toString(), true, user.getEmail(), user.getPassword(), null, user.getPassword(), convertToGrantedAuthorities(user.getAuthoritySet()), null);
+        UserAuth userAuth = new UserAuth(userEmail.get().getId().toString(), true, userEmail.get().getEmail(), userEmail.get().getPassword(), null, userEmail.get().getPassword(), convertToGrantedAuthorities(userEmail.get().getAuthoritySet()), null);
         String jwtToken = jwtService.generateToken(userAuth);
 
-        return BasicResponse.builder().status(true).code(200).message("Successfully logged in").token(jwtToken).build();
+        return BasicResponse.builder().status(true).result(true).code(200).message("Successfully logged in").token(jwtToken).build();
     }
 
     @Override
@@ -110,36 +110,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public List<User> listUserByAuthority(String authority) {
-        UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
-
-        Set<Authority> authoritySet = userAuth.getUser().getAuthoritySet();
-        Authority highestLevelAuthority = authoritySet.stream()
-                .max(Comparator.comparingInt(Authority::getLevel))
-                .orElse(null);
-        int userHighestLevel = highestLevelAuthority == null ? 0 : highestLevelAuthority.getLevel();
-
-        Optional<Authority> requestedAuthority = authorityRepository.findByAuthority(authority);
-        if (requestedAuthority.isEmpty()) throw new NoSuchElementException("Authority not found");
-        int requestedAuthorityLevel = requestedAuthority.get().getLevel();
-
-        if (userHighestLevel <= requestedAuthorityLevel) throw new AccessDeniedException("Not enough authority level");
-
+        //check if request user has enough authority level to actually implement authority changes or request data of requested user
+        checkForAuthorityLevel(authority);
         List<User> userList = userRepository.listByUserAuthority(authority);
-
         //remove password from user
-        List<User> newUserList = userList.stream()
-                .map(user -> {
-                    return User.builder()
-                            .id(user.getId())
-                            .name(user.getName())
-                            .email(user.getEmail())
-                            .profileUrl(user.getProfileUrl())
-                            .authoritySet(user.getAuthoritySet())
-                            .build();
-                })
-                .toList();
-
-        return newUserList.isEmpty() ? List.of() : userList;
+        return userListToSendableUserList(userList);
     }
 
     @Override
@@ -148,10 +123,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         Optional<User> user = userRepository.findById(UUID.fromString(userId));
         if (user.isEmpty()) throw new UsernameNotFoundException("User not found");
 
-        Authority newAuthority = checkForAuthorityUpdate(authority);
-
+        checkForAuthorityLevel(authority);
+        Optional<Authority> newAuthority = authorityRepository.findByAuthority(authority);
         if (authority.equalsIgnoreCase("staff")) {
-            Restaurant restaurant = restaurantService.getRestaurantByOwnerId(userAuth.getUser());
+            Restaurant restaurant = restaurantService.getOwnerRestaurant();
             Set<User> staffSet = restaurant.getStaffSet();
             staffSet.add(user.get());
             restaurant.setStaffSet(staffSet);
@@ -159,11 +134,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
         Set<Authority> authoritySet = user.get().getAuthoritySet();
-        authoritySet.add(newAuthority);
+        authoritySet.add(newAuthority.get());
         user.get().setAuthoritySet(authoritySet);
 
         userRepository.save(user.get());
-        return BasicResponse.builder().status(true).code(200).message("Authority assigned successfully").build();
+        return BasicResponse.builder().status(true).result(true).code(200).message("Authority assigned successfully").build();
     }
 
     @Override
@@ -172,10 +147,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         Optional<User> user = userRepository.findById(UUID.fromString(userId));
         if (user.isEmpty()) throw new UsernameNotFoundException("User not found");
 
-        Authority newAuthority = checkForAuthorityUpdate(authority);
+        checkForAuthorityLevel(authority);
+        Optional<Authority> newAuthority = authorityRepository.findByAuthority(authority);
 
         if (authority.equalsIgnoreCase("staff")) {
-            Restaurant restaurant = restaurantService.getRestaurantByOwnerId(userAuth.getUser());
+            Restaurant restaurant = restaurantService.getOwnerRestaurant();
             Set<User> staffSet = restaurant.getStaffSet();
             staffSet.remove(user.get());
             restaurant.setStaffSet(staffSet);
@@ -183,7 +159,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
         Set<Authority> authoritySet = user.get().getAuthoritySet();
-        authoritySet.remove(newAuthority);
+        authoritySet.remove(newAuthority.get());
         user.get().setAuthoritySet(authoritySet);
 
         userRepository.save(user.get());
@@ -193,18 +169,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public List<User> userList() {
         List<User> userList = userRepository.findAll();
-        userList = userList.stream().map(user -> {
-            return User.builder()
-                    .id(user.getId())
-                    .name(user.getName())
-                    .email(user.getEmail())
-                    .profileUrl(user.getProfileUrl())
-                    .createdAt(user.getCreatedAt())
-                    .updatedAt(user.getUpdatedAt())
-                    .authoritySet(user.getAuthoritySet())
-                    .build();
-        }).toList();
-        return userList.isEmpty() ? List.of() : userList;
+        return userListToSendableUserList(userList);
     }
 
     @Override
@@ -327,4 +292,37 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return newAuthority.get();
     }
 
+    private List<User> userListToSendableUserList(List<User> userList){
+        List<User> newUserList = userList.stream().map(user -> {
+            Set<Authority> authoritySet = user.getAuthoritySet();
+            Set<Authority> newAuthoritySet = authoritySet.stream().map(
+                    aut -> {
+                        return Authority.builder().authority(aut.getAuthority()).level(aut.getLevel()).build();
+                    }).collect(Collectors.toSet());
+            return User.builder()
+                    .id(user.getId())
+                    .name(user.getName())
+                    .email(user.getEmail())
+                    .profileUrl(user.getProfileUrl())
+                    .createdAt(user.getCreatedAt())
+                    .updatedAt(user.getUpdatedAt())
+                    .authoritySet(newAuthoritySet)
+                    .build();
+        }).toList();
+        return newUserList.isEmpty() ? List.of() : newUserList;
+    }
+
+    public void checkForAuthorityLevel(String authority){
+        UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
+
+        Set<Authority> authoritySet = userAuth.getUser().getAuthoritySet();
+        Authority highestLevelAuthority = authoritySet.stream()
+                .min(Comparator.comparingInt(Authority::getLevel))
+                .orElse(null);
+        int userHighestLevel = highestLevelAuthority == null ? 0 : highestLevelAuthority.getLevel();
+        Optional<Authority> requestedAuthority = authorityRepository.findByAuthority(authority);
+        if (requestedAuthority.isEmpty()) throw new NoSuchElementException("Authority not found");
+        int requestedAuthorityLevel = requestedAuthority.get().getLevel();
+        if (userHighestLevel >= requestedAuthorityLevel) throw new AccessDeniedException("Not enough authority level");
+    }
 }

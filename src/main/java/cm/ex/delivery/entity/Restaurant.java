@@ -34,15 +34,17 @@ public class Restaurant {
 
     private String backgroundUrl;
 
-    private LocalTime openingTime;
+    private String openingTime;
 
-    private LocalTime closingTime;
+    private String closingTime;
+
+    private boolean approved;
 
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private User ownerId;
 
@@ -73,5 +75,21 @@ public class Restaurant {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    public Restaurant(String name, String description, String address, String contactNumber, String email, String backgroundUrl, String openingTime, String closingTime, String iconUrl, Set<Category> categorySet, User ownerId, Set<User> staffSet, Set<Image> imageGallerySet) {
+        this.name = name;
+        this.description = description;
+        this.address = address;
+        this.contactNumber = contactNumber;
+        this.email = email;
+        this.backgroundUrl = backgroundUrl;
+        this.openingTime = openingTime;
+        this.closingTime = closingTime;
+        this.iconUrl = iconUrl;
+        this.categorySet = categorySet;
+        this.ownerId = ownerId;
+        this.staffSet = staffSet;
+        this.imageGallerySet = imageGallerySet;
     }
 }

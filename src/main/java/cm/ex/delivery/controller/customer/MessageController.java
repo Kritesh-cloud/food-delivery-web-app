@@ -13,7 +13,7 @@ public class MessageController {
 
     @PostMapping("/test")
     public ResponseEntity<BasicResponse> test() {
-        return ResponseEntity.status(HttpStatusCode.valueOf(418)).body(new BasicResponse("I'm a Tea pot"));
+        return ResponseEntity.status(HttpStatusCode.valueOf(418)).body(new BasicResponse("I'm a Tea pot. Authentication User Message Test"));
     }
 }
 // notification, report, customer support - later

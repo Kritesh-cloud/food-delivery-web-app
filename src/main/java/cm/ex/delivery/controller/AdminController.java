@@ -27,39 +27,40 @@ public class AdminController {
         return ResponseEntity.status(HttpStatusCode.valueOf(418)).body(new BasicResponse("I'm a Tea pot. Admin Test"));
     }
 
-    @GetMapping("/userList")
+    @GetMapping("/user-list")
     public ResponseEntity<List<User>> userList() {
         return ResponseEntity.status(HttpStatusCode.valueOf(418)).body(userService.userList());
     }
 
-    @PostMapping("/addNewCategory")
+    @PostMapping("/add-category")
     public ResponseEntity<BasicResponse> addNewCategory(@RequestParam String category) {
-        return ResponseEntity.status(HttpStatusCode.valueOf(418)).body(categoryService.addCategory(category));
+        BasicResponse basicResponse = categoryService.addCategory(category);
+        return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
     }
 
-    @GetMapping("/listAllCategory")
+    @GetMapping("/list-category")
     public ResponseEntity<List<Category>> listAllCategory() {
-        return ResponseEntity.status(HttpStatusCode.valueOf(418)).body(categoryService.listCategory());
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(categoryService.listCategory());
     }
 
-    @PostMapping("/removeCategory")
+    @PostMapping("/remove-category")
     public ResponseEntity<BasicResponse> removeCategory(@RequestParam String category) {
         return ResponseEntity.status(HttpStatusCode.valueOf(418)).body(categoryService.removeCategory(category));
     }
 
-    @PostMapping("/listUserByAuthority")
-    public ResponseEntity<List<User>> listUserByAuthority(String authority) {
+    @GetMapping("/list-user/{authority}")
+    public ResponseEntity<List<User>> listUserByAuthority(@PathVariable String authority) {
         List<User> userList = userService.listUserByAuthority(authority);
         return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(userList);
     }
 
-    @PostMapping("/assignAuthority")
+    @PostMapping("/assign-authority")
     public ResponseEntity<BasicResponse> assignAuthority(@RequestParam String authority, @RequestParam String userId) {
         BasicResponse basicResponse = userService.assignAuthority(authority, userId);
         return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
     }
 
-    @PostMapping("/removeAuthority")
+    @PostMapping("/remove-authority")
     public ResponseEntity<BasicResponse> removeAuthority(@RequestParam String authority, @RequestParam String userId) {
         BasicResponse basicResponse = userService.removeAuthority(authority, userId);
         return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);

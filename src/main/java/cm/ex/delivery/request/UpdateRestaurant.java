@@ -23,7 +23,7 @@ public class UpdateRestaurant {
     private boolean backgroundChanged;
     private boolean newGalleryImageAdded;
     private List<String> removeGalleryImageIds;
-    private LocalTime openingTime;
-    private LocalTime closingTime;
+    private String openingTime;
+    private String closingTime;
 
 }

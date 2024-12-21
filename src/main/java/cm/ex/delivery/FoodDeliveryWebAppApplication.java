@@ -14,4 +14,5 @@ public class FoodDeliveryWebAppApplication {
 /*
 entity > repository -> interface -> User Details -> (Filters) -> (exception handling) -> service -> controller
 drop database delivery; create database delivery; use delivery;
+mvn spring-boot:run
 */

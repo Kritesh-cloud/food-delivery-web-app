@@ -4,6 +4,7 @@ import cm.ex.delivery.entity.BrowseContent;
 import cm.ex.delivery.entity.MenuItem;
 import cm.ex.delivery.entity.Restaurant;
 import cm.ex.delivery.response.BasicResponse;
+import cm.ex.delivery.response.BrowseContentResponse;
 import cm.ex.delivery.service.MenuItemServiceImpl;
 import cm.ex.delivery.service.RestaurantServiceImpl;
 import cm.ex.delivery.service.interfaces.BrowseContentService;
@@ -29,12 +30,12 @@ public class BrowseContentController {
 
     @PostMapping("/test")
     public ResponseEntity<BasicResponse> test() {
-        return ResponseEntity.status(HttpStatusCode.valueOf(418)).body(new BasicResponse("I'm a Tea pot"));
+        return ResponseEntity.status(HttpStatusCode.valueOf(418)).body(new BasicResponse("I'm a Tea pot. Authentication User Browse Test"));
     }
 
     @GetMapping("/listContent")
-    public ResponseEntity<List<BrowseContent>> listContent() {
-        List<BrowseContent> browseContentList = browseContentService.listAllBrowseContentByOrder();
+    public ResponseEntity<List<BrowseContentResponse>> listContent() {
+        List<BrowseContentResponse> browseContentList = browseContentService.listAllBrowseContentByOrder();
         return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(browseContentList);
     }
 

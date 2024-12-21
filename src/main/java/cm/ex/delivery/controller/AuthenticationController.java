@@ -17,9 +17,9 @@ public class AuthenticationController {
     @Autowired
     private UserServiceImpl userService;
 
-    @GetMapping("/test")
-    public String test() {
-        return "Delivery Test Controller";
+    @PostMapping("/test")
+    public ResponseEntity<BasicResponse> test() {
+        return ResponseEntity.status(HttpStatusCode.valueOf(418)).body(new BasicResponse("I'm a Tea pot. Authentication Controller Test"));
     }
 
     @PostMapping("/signUp")

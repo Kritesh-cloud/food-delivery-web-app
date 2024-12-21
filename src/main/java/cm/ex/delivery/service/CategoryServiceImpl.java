@@ -27,7 +27,8 @@ public class CategoryServiceImpl implements CategoryService {
             return BasicResponse.builder().status(true).code(200).message("This category is already added").build();
 
         Category newCategory = new Category(category);
-        return BasicResponse.builder().status(true).code(200).message("New category added successfully").build();
+        categoryRepository.save(newCategory);
+        return BasicResponse.builder().status(true).result(true).code(200).message("New category added successfully").build();
     }
 
     @Override

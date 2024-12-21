@@ -21,7 +21,7 @@ public class IdHolder {
 
     private String dataType;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "browse_content_id", referencedColumnName = "id")
     private BrowseContent browseContentId;
 

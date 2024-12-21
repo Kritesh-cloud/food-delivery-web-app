@@ -1,5 +1,6 @@
 package cm.ex.delivery.service;
 
+import cm.ex.delivery.entity.Authority;
 import cm.ex.delivery.entity.Image;
 import cm.ex.delivery.entity.Restaurant;
 import cm.ex.delivery.entity.User;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class RestaurantServiceImpl implements RestaurantService {
@@ -25,11 +27,24 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Autowired
     private ImageServiceImpl imageService;
 
+    @Autowired
+    private AuthorityRepository authorityRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
     @Transactional
     @Override
     public BasicResponse addRestaurant(Restaurant restaurantInfo, MultipartFile icon, MultipartFile background, MultipartFile... gallery) {
+        UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
         List<String> validateList = new ArrayList<>(List.of("new restaurant", "icon image", "background image", "gallery"));
         validateRestaurant(restaurantInfo, new UpdateRestaurant(), validateList, icon, background, gallery);
+
+        Optional<Authority> newAuthority = authorityRepository.findByAuthority("owner");
+
+        Set<Authority> authoritySet = userAuth.getUser().getAuthoritySet();
+        authoritySet.add(newAuthority.get());
+        userAuth.getUser().setAuthoritySet(authoritySet);
 
         String path = "http://localhost:8080/image/";
         try {
@@ -44,6 +59,8 @@ public class RestaurantServiceImpl implements RestaurantService {
             restaurantInfo.setIconUrl(path + iconImage.getId());
             restaurantInfo.setBackgroundUrl(path + backgroundImage.getId());
             restaurantInfo.setImageGallerySet(imageSet);
+            restaurantInfo.setOwnerId(userAuth.getUser());
+
             restaurantRepository.save(restaurantInfo);
             return BasicResponse.builder().status(true).code(200).message("Restaurant account created successfully").build();
         } catch (Exception e) {
@@ -58,15 +75,38 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
+    public Restaurant getOwnerRestaurant() {
+        return getRestaurant();
+    }
+
+
+    @Override
     public Restaurant getRestaurantById(String id) {
-        return restaurantRepository.findById(UUID.fromString(id))
-                .orElseThrow(() -> new NoSuchElementException("Restaurant not found"));
+        Optional<Restaurant> restaurant = restaurantRepository.findById(UUID.fromString(id));
+        if(restaurant.isEmpty()) throw new NoSuchElementException("restaurant not found");
+        List<User> userList = new ArrayList<>();
+        userList.add(restaurant.get().getOwnerId());
+        List<User> newUserList = userListToSendableUserList(userList);
+        restaurant.get().setOwnerId(newUserList.get(0));
+
+        return restaurant.get();
     }
 
     @Override
     public List<Restaurant> listAllRestaurant() {
         List<Restaurant> restaurantList = restaurantRepository.findAll();
-        return restaurantList.isEmpty() ? List.of() : restaurantList;
+
+        List<Restaurant> newRestaurantList = restaurantList.stream().map(
+                restaurant -> {
+                    List<User> userList = new ArrayList<>();
+                    userList.add(restaurant.getOwnerId());
+                    List<User> newUserList = userListToSendableUserList(userList);
+                    restaurant.setOwnerId(newUserList.get(0));
+                    return restaurant;
+                }
+        ).toList();
+
+        return newRestaurantList.isEmpty() ? List.of() : newRestaurantList;
     }
 
     @Override
@@ -125,6 +165,39 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public BasicResponse removeRestaurant() {
+        UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
+
+
+        User user = userAuth.getUser();
+        // Find authority to remove
+        Authority authorityToRemove = authorityRepository.findByAuthority("owner")
+                .orElseThrow(() -> new RuntimeException("Authority not found"));
+
+// Remove the authority from the user's set
+        user.getAuthoritySet().remove(authorityToRemove);
+
+// Save the updated user (removes the association in the join table)
+        userRepository.save(user);
+//        Set<Authority> authoritySet = user.getAuthoritySet();
+//        Optional<Authority> authorityToRemove = authorityRepository.findByAuthority("owner");
+//
+//        System.out.println("authorityToRemove: "+authorityToRemove.get().getAuthority());
+//
+//        Set<Authority> newAuthoritySet =  authoritySet.stream().filter(authority -> {
+//            return !authority.getAuthority().equals("owner");
+//        }).collect(Collectors.toSet());
+//
+//        for(Authority a : newAuthoritySet){
+//            System.out.println("newAuthoritySet : "+a.getAuthority());
+//        }
+//        user.setAuthoritySet(Set.of());
+//        user.setAuthoritySet(authoritySet);
+        for(Authority a : user.getAuthoritySet()){
+            System.out.println("user authority : "+a.getAuthority());
+        }
+//
+//        userRepository.save(user);
+
         restaurantRepository.delete(getRestaurant());
         return BasicResponse.builder().status(true).code(200).message("Restaurant account deleted successfully").build();
     }
@@ -184,6 +257,32 @@ public class RestaurantServiceImpl implements RestaurantService {
 
         Optional<Restaurant> restaurant = restaurantRepository.findByOwnerId(userAuth.getUser());
         if (restaurant.isEmpty()) throw new NoSuchElementException("Restaurant not found");
+
+        List<User> userList = new ArrayList<>();
+        userList.add(restaurant.get().getOwnerId());
+        List<User> newUserList = userListToSendableUserList(userList);
+        restaurant.get().setOwnerId(newUserList.get(0));
+
         return restaurant.get();
+    }
+
+    private List<User> userListToSendableUserList(List<User> userList){
+        List<User> newUserList = userList.stream().map(user -> {
+            Set<Authority> authoritySet = user.getAuthoritySet();
+            Set<Authority> newAuthoritySet = authoritySet.stream().map(
+                    aut -> {
+                        return Authority.builder().authority(aut.getAuthority()).level(aut.getLevel()).build();
+                    }).collect(Collectors.toSet());
+            return User.builder()
+                    .id(user.getId())
+                    .name(user.getName())
+                    .email(user.getEmail())
+                    .profileUrl(user.getProfileUrl())
+                    .createdAt(user.getCreatedAt())
+                    .updatedAt(user.getUpdatedAt())
+                    .authoritySet(newAuthoritySet)
+                    .build();
+        }).toList();
+        return newUserList.isEmpty() ? List.of() : newUserList;
     }
 }

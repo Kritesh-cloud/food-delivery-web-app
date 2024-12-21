@@ -58,7 +58,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Basic ")) {
-            logger.info("#[INFO]Authentication Filter. Basic");
+            System.out.println("Basic filter");
             String username = extractUsernameAndPassword(authHeader)[0];
             String password = extractUsernameAndPassword(authHeader)[1];
 
@@ -70,12 +70,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         }
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            logger.info("#[INFO]Authentication Filter. Bearer");
+            System.out.println("Bearer filter");
             final String token = authHeader.substring(7);
-
             UserAuth auth = userTokenAuth(token);
-
-            System.out.println("## auth bearer : " + auth.toString());
             if (!auth.isAuthenticated()) {
                 throw new AccessDeniedException("Bad Credentials");
             }
