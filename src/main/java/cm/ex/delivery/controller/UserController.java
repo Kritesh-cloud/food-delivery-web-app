@@ -40,18 +40,18 @@ public class UserController {
         return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
     }
 
-    @GetMapping("/viewProfile")
+    @GetMapping("/view-profile")
     public ResponseEntity<User> viewProfile() {
         return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(userService.userInfo());
     }
 
-    @PostMapping("/updateProfile")
+    @PostMapping("/update-profile")
     public ResponseEntity<BasicResponse> updateProfile(@RequestBody User user) {
         BasicResponse basicResponse = userService.updateUser(user);
         return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
     }
 
-    @PostMapping("/deleteProfile")
+    @PostMapping("/delete-profile")
     public ResponseEntity<BasicResponse> deleteProfile() {
         BasicResponse basicResponse = userService.deleteUser();
         return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);

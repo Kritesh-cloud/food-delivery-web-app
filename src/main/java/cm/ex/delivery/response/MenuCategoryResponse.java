@@ -3,6 +3,8 @@ package cm.ex.delivery.response;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @ToString
@@ -17,4 +19,8 @@ public class MenuCategoryResponse {
     private String name;
 
     private String restaurantId;
+
+    private List<MenuItemResponse> menuItemResponseList;
+
+
 }

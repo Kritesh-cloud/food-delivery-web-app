@@ -13,6 +13,8 @@ public interface MenuCategoryService {
 
     public List<MenuCategoryResponse> listMenuCategoryByOrder() throws AccessDeniedException;
 
+    public List<MenuCategoryResponse> listMenuCategoryByOrder(String restaurantId);
+
     public BasicResponse updateOrder(int currentOrder, int newOrder) throws AccessDeniedException;
 
     public BasicResponse removeMenuCategory(String menuCategoryId);

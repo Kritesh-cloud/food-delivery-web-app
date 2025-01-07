@@ -13,6 +13,8 @@ public interface MenuItemService {
 
     public List<MenuItemResponse> listMenuItemByOrder(String menuCategoryName);
 
+    public List<MenuItemResponse> listMenuItemByOrder(String menuCategoryName, String restaurantId);
+
     public MenuItem getById(String id);
 
     public MenuItemResponse getByIdResponse(String id);

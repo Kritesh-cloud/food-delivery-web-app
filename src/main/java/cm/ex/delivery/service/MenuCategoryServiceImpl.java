@@ -77,6 +77,22 @@ public class MenuCategoryServiceImpl implements MenuCategoryService {
     }
 
     @Override
+    public List<MenuCategoryResponse> listMenuCategoryByOrder(String restaurantId){
+        Optional<Restaurant> restaurant = restaurantRepository.findById(UUID.fromString(restaurantId));
+        if (restaurant.isEmpty()) throw new NoSuchElementException("Restaurant for this user not found");
+
+        List<MenuCategory> menuCategoryList = menuCategoryRepository.findByRestaurantOrdered(restaurant.get());
+        List<MenuCategoryResponse> menuCategoryResponses = menuCategoryList.stream().map(
+                menuCategory -> {
+                    MenuCategoryResponse menuCategoryResponse = modelMapper.map(menuCategory,MenuCategoryResponse.class);
+                    menuCategoryResponse.setRestaurantId(String.valueOf(menuCategory.getRestaurantId().getId()));
+                    return menuCategoryResponse;
+                }
+        ).toList();
+        return menuCategoryResponses.isEmpty() ? new ArrayList<>() : menuCategoryResponses;
+    }
+
+    @Override
     public BasicResponse updateOrder(int currentOrder, int newOrder) throws AccessDeniedException {
         UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
 

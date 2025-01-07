@@ -44,15 +44,15 @@ public class Restaurant {
 
     private LocalDateTime updatedAt;
 
-    @OneToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private User ownerId;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "restaurant__staff__user",
-            joinColumns = @JoinColumn(name = "restaurant_id", updatable = true),
-            inverseJoinColumns = @JoinColumn(name = "staff_id", updatable = true))
-    private Set<User> staffSet;
+//    @ManyToMany(fetch = FetchType.EAGER)
+//    @JoinTable(name = "restaurant__staff__user",
+//            joinColumns = @JoinColumn(name = "restaurant_id", updatable = true),
+//            inverseJoinColumns = @JoinColumn(name = "staff_id", updatable = true))
+//    private Set<User> staffSet;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "restaurant__category",
@@ -77,7 +77,7 @@ public class Restaurant {
         updatedAt = LocalDateTime.now();
     }
 
-    public Restaurant(String name, String description, String address, String contactNumber, String email, String backgroundUrl, String openingTime, String closingTime, String iconUrl, Set<Category> categorySet, User ownerId, Set<User> staffSet, Set<Image> imageGallerySet) {
+    public Restaurant(String name, String description, String address, String contactNumber, String email, String backgroundUrl, String openingTime, String closingTime, String iconUrl, Set<Category> categorySet, User ownerId, Set<Image> imageGallerySet) {
         this.name = name;
         this.description = description;
         this.address = address;
@@ -89,7 +89,10 @@ public class Restaurant {
         this.iconUrl = iconUrl;
         this.categorySet = categorySet;
         this.ownerId = ownerId;
-        this.staffSet = staffSet;
+//        this.staffSet = staffSet;
         this.imageGallerySet = imageGallerySet;
     }
+
+
+
 }

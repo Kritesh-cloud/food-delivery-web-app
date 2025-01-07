@@ -14,6 +14,8 @@ public interface UserService {
 
     public BasicResponse logIn(User user);
 
+    public User findUserById(String userId);
+
     public User userInfo();
 
     public List<User> userList();

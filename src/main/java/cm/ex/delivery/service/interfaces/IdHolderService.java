@@ -10,11 +10,13 @@ public interface IdHolderService {
 
     public IdHolder addToIdHolder(String dataId, String dataType, BrowseContent browseContentId);
 
-    public IdHolder findById(String itemId);
+//    public IdHolder findById(String itemId);
 
     public List<IdHolder> listIdHolderByBrowseContentId(String browseContentId);
 
     public List<IdHolder> listAllIdHolder();
+
+    public List<IdHolder> listAllIdHolderDivideByContentId();
 
     public BasicResponse removeByBrowseContentIdAndItemId(String browseContentId, String itemId);
 

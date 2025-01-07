@@ -2,6 +2,7 @@ package cm.ex.delivery.controller.customer;
 
 import cm.ex.delivery.request.StripeRequestDto;
 import cm.ex.delivery.response.BasicResponse;
+import cm.ex.delivery.response.BasketResponse;
 import cm.ex.delivery.response.StripeResponseDto;
 import cm.ex.delivery.service.BasketServiceImpl;
 import cm.ex.delivery.service.OrderServiceImpl;
@@ -30,31 +31,43 @@ public class OrderController {
         return ResponseEntity.status(HttpStatusCode.valueOf(418)).body(new BasicResponse("I'm a Tea pot. Authentication User Order Test"));
     }
 
-    @PostMapping("/addToBasket/{menuItemId}")
+    @PostMapping("/add-to-basket/{menuItemId}")
     public ResponseEntity<BasicResponse> addToBasket(@PathVariable String menuItemId) {
+        System.out.println("menuItemId: "+menuItemId);
         BasicResponse basicResponse = basketService.addItemToBasket(menuItemId);
         return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
     }
 
-    @PostMapping("/updateItemQuantity")
+    @GetMapping("/get-user-basket")
+    public ResponseEntity<BasketResponse> getUserBasket() {
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(basketService.userBasket());
+    }
+
+    @GetMapping("/list-basket-item")
+    public ResponseEntity<BasicResponse> listBasketItem() {
+        BasicResponse basicResponse = new BasicResponse();
+        return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
+    }
+
+    @PostMapping("/update-item-quantity")
     public ResponseEntity<BasicResponse> updateItemQuantity(@RequestParam String menuItemId, @RequestParam Integer quantity) {
         BasicResponse basicResponse = basketService.updateItemQuantityOfBasket(menuItemId, quantity);
         return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
     }
 
-    @PostMapping("/removeFromBasket/{menuItemId}")
+    @PostMapping("/remove-from-basket/{menuItemId}")
     public ResponseEntity<BasicResponse> removeFromBasket(@PathVariable String menuItemId) {
         BasicResponse basicResponse = basketService.removeItemFromBasket(menuItemId);
         return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
     }
 
-    @PostMapping("/placeOrder")
+    @PostMapping("/place-order")
     public ResponseEntity<BasicResponse> placeOrder() {
         BasicResponse basicResponse = orderService.createOrder();
         return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
     }
 
-    @PostMapping("/paymentDetail")
+    @PostMapping("/payment-detail")
     public ResponseEntity<StripeResponseDto> paymentDetail(@RequestBody StripeRequestDto stripeRequestDto) {
         StripeResponseDto stripeResponse = stripeService.checkoutProducts(stripeRequestDto);
         return ResponseEntity

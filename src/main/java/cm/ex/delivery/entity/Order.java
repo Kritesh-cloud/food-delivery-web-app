@@ -27,19 +27,19 @@ public class Order {
 
     private LocalDateTime purchasedAt;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "basket_id", referencedColumnName = "id")
     private Basket basketId;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "restaurant", referencedColumnName = "id")
     private Restaurant restaurant;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "buyer", referencedColumnName = "id")
     private User buyer;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "delivery_person", referencedColumnName = "id")
     private User deliveryPerson;
 

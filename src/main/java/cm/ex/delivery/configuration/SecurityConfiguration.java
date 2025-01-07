@@ -40,8 +40,19 @@ public class SecurityConfiguration {
                         .requestMatchers("/signIn").permitAll()
                         .requestMatchers("/signUp").permitAll()
 
-                        .requestMatchers("/product/list").permitAll()
-                        .requestMatchers("/product/image/{imageId}").permitAll()
+                                .requestMatchers("/user/browse/*").permitAll()
+                                .requestMatchers("/list-restaurant-details").permitAll()
+                                .requestMatchers("/list-restaurant-details/*").permitAll()
+                                .requestMatchers("/list-restaurant-details-by-id/{id}").permitAll()
+                                .requestMatchers("/reverse-list-restaurant-details/{id}").permitAll()
+//                                .requestMatchers("/reverse-list-restaurant-details/{id}").permitAll()
+//
+
+                                .requestMatchers("/user-list").permitAll()
+                                .requestMatchers("/get-user/{userId}").permitAll()
+
+//                        .requestMatchers("/product/list").permitAll()
+                        .requestMatchers("/image/{imageId}").permitAll()
 
 //                        // Role-based access control
 //                        .requestMatchers("/admin/**").hasAnyAuthority("admin", "moderator", "user")

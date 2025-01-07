@@ -22,7 +22,7 @@ public class Notification {
 
     private LocalDateTime createdAt;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "sender_id", referencedColumnName = "id")
     private User senderId;
 

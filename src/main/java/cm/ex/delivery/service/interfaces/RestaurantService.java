@@ -4,6 +4,7 @@ import cm.ex.delivery.entity.Restaurant;
 import cm.ex.delivery.entity.User;
 import cm.ex.delivery.request.UpdateRestaurant;
 import cm.ex.delivery.response.BasicResponse;
+import cm.ex.delivery.response.RestaurantResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -19,6 +20,14 @@ public interface RestaurantService {
     public Restaurant getRestaurantById(String id);
 
     public List<Restaurant> listAllRestaurant();
+
+    public List<RestaurantResponse> listAllRestaurantDetails();
+
+    public RestaurantResponse getRestaurantDetailsById(String id);
+
+    public List<RestaurantResponse> listAllRestaurantDetailsByBrowseList(String browseId);
+
+    public List<RestaurantResponse> reverseListAllRestaurantDetailsByBrowseList(String browseId);
 
     public BasicResponse updateRestaurant(UpdateRestaurant restaurantInfo, MultipartFile icon, MultipartFile background, MultipartFile... gallery);
 

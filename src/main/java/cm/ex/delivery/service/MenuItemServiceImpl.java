@@ -40,7 +40,7 @@ public class MenuItemServiceImpl implements MenuItemService {
 
         List<MenuItem> menuItemList = menuItemRepository.findByMenuCategory(menuCategory.get());
         int itemOrder = menuItemList.isEmpty() ? 0 : menuItemList.size() + 1;
-        menuItemRepository.save(new MenuItem(itemOrder, menuItem, price, menuCategory.get()));
+        menuItemRepository.save(new MenuItem( menuItem, price, menuCategory.get()));
 
         return BasicResponse.builder().status(true).code(200).message("Menu Item added successfully").build();
     }
@@ -51,7 +51,7 @@ public class MenuItemServiceImpl implements MenuItemService {
         Optional<MenuCategory> menuCategory = menuCategoryRepository.findByNameAndRestaurant(menuCategoryName, getRestaurant());
         if (menuCategory.isEmpty()) throw new NoSuchElementException("Menu Category not found");
 
-        List<MenuItem> menuItemList = menuItemRepository.findByMenuCategoryOrdered(menuCategory.get());
+        List<MenuItem> menuItemList = menuItemRepository.findByMenuCategory(menuCategory.get());
         return  menuItemList.stream().map(
                 menuItem -> {
                     MenuItemResponse menuItemResponse = modelMapper.map(menuItem,MenuItemResponse.class);
@@ -59,7 +59,24 @@ public class MenuItemServiceImpl implements MenuItemService {
                     return menuItemResponse;
                 }
         ).toList();
-//        MenuItemResponse
+    }
+
+    @Override
+    public List<MenuItemResponse> listMenuItemByOrder(String menuCategoryName, String restaurantId){
+        Optional<Restaurant> restaurant = restaurantRepository.findById(UUID.fromString(restaurantId));
+        if(restaurant.isEmpty()) throw new NoSuchElementException("Restaurant not found");
+
+        Optional<MenuCategory> menuCategory = menuCategoryRepository.findByNameAndRestaurant(menuCategoryName, restaurant.get());
+        if (menuCategory.isEmpty()) throw new NoSuchElementException("Menu Category not found");
+
+        List<MenuItem> menuItemList = menuItemRepository.findByMenuCategory(menuCategory.get());
+        return  menuItemList.stream().map(
+                menuItem -> {
+                    MenuItemResponse menuItemResponse = modelMapper.map(menuItem,MenuItemResponse.class);
+                    menuItemResponse.setMenuCategoryId(String.valueOf(menuItem.getMenuCategory().getId()));
+                    return menuItemResponse;
+                }
+        ).toList();
     }
 
     @Override
@@ -92,7 +109,7 @@ public class MenuItemServiceImpl implements MenuItemService {
         List<MenuCategory> menuCategoryList = menuCategoryRepository.findByRestaurantId(getRestaurant());
         List<MenuItem> menuItemMainList = new ArrayList<>();
         for (MenuCategory menuCategory : menuCategoryList) {
-            List<MenuItem> menuItemList = menuItemRepository.findByMenuCategoryOrdered(menuCategory);
+            List<MenuItem> menuItemList = menuItemRepository.findByMenuCategory(menuCategory);
             menuItemMainList.addAll(menuItemList);
         }
 
@@ -111,11 +128,11 @@ public class MenuItemServiceImpl implements MenuItemService {
         List<MenuCategory> menuCategoryList = menuCategoryRepository.findByRestaurantId(getRestaurant());
         List<MenuItem> menuItemMainList = new ArrayList<>();
         for (MenuCategory tempMenuCategory : menuCategoryList) {
-            List<MenuItem> menuItemList = menuItemRepository.findByMenuCategoryOrdered(tempMenuCategory);
+            List<MenuItem> menuItemList = menuItemRepository.findByMenuCategory(tempMenuCategory);
             menuItemMainList.addAll(menuItemList);
         }
 
-        List<MenuItem> deletMenuItemList = menuItemRepository.findByMenuCategoryOrdered(menuCategory.get());
+        List<MenuItem> deletMenuItemList = menuItemRepository.findByMenuCategory(menuCategory.get());
         if (!menuItemMainList.containsAll(deletMenuItemList)) throw new AccessDeniedException("Unauthorized for removing this menu item");
 
         menuItemRepository.deleteAllInBatch(deletMenuItemList);

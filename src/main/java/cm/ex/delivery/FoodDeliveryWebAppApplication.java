@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class FoodDeliveryWebAppApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(FoodDeliveryWebAppApplication.class, args);
-		System.out.println("Food Delivery Web Application");
+		System.out.println("\n=================================");
+		System.out.println("= Food Delivery Web Application =");
+		System.out.println("=================================\n");
 	}
 }
 

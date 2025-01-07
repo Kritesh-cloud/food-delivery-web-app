@@ -12,7 +12,7 @@ public interface ImageService {
 
     public Image addImage(MultipartFile file) throws IOException;
 
-    public Optional<Image> getImageById(String id);
+    public byte[] getImageById(String imageId);
 
     public List<Image> listAllImages();
 

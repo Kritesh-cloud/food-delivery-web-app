@@ -77,12 +77,12 @@ public class ModeratorController {
         return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(browseContentService.listAllBrowseContentByOrder());
     }
 
-    @PostMapping("/get-browse-content/{browseContentId}")
+    @GetMapping("/get-browse-content/{browseContentId}")
     public ResponseEntity<BrowseContent> getBrowseList(@PathVariable String browseContentId) {
         return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(browseContentService.getBrowseContentById(browseContentId));
     }
 
-    @PostMapping("/get-browse-content-by-title/{title}")
+    @GetMapping("/get-browse-content-by-title/{title}")
     public ResponseEntity<BrowseContent> getBrowseListByTitle(@PathVariable String title) {
         return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(browseContentService.getBrowseContentByTitle(title));
     }
@@ -107,6 +107,36 @@ public class ModeratorController {
     @PostMapping("/remove-authority")
     public ResponseEntity<BasicResponse> removeAuthority(@RequestParam String authority, @RequestParam String userId) {
         BasicResponse basicResponse = userService.removeAuthority(authority, userId);
+        return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
+    }
+
+
+
+
+    @GetMapping("/list-restaurant-browse-content")
+    public ResponseEntity<List<BrowseContentResponse>> listBrowseContent() {
+        List<BrowseContentResponse> browseContentResponseList = browseContentService.listBrowseContentIdResponse();
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(browseContentResponseList);
+    }
+
+    @GetMapping("/list-restaurant-browse-content/{id}")
+    public ResponseEntity<BrowseContentResponse> listBrowseContentById(@PathVariable String id) {
+        BrowseContentResponse browseContentResponse = browseContentService.getBrowseContentIdResponseById(id);
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(browseContentResponse);
+    }
+
+    @PostMapping("/add-item-to-browse-content")
+    public ResponseEntity<BasicResponse> addItemToBrowseContent(@RequestParam String browseContentId, @RequestParam String itemId) {
+        System.out.println("add browseContentId: "+browseContentId+ ", itemId:"+itemId);
+        BasicResponse basicResponse = browseContentService.addBrowseContentItem(browseContentId,itemId);
+        return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
+    }
+
+    @PostMapping("/remove-item-from-browse-content")
+    public ResponseEntity<BasicResponse> removeItemFromBrowseContent(@RequestParam String browseContentId, @RequestParam String itemId) {
+        System.out.println("rmv browseContentId: "+browseContentId+ ", itemId:"+itemId);
+        BasicResponse basicResponse = browseContentService.removeBrowseContentItem(browseContentId,itemId);
+//        basicResponse = new BasicResponse("just msg");
         return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
     }
 

@@ -27,12 +27,19 @@ public class ImageServiceImpl implements ImageService {
         return imageRepository.save(image);
     }
 
-    @Override
-    public Optional<Image> getImageById(String id) {
-        if (id.isBlank())
-            throw new IllegalArgumentException("Input cannot be blank.");
+//    @Override
+//    public Optional<Image> getImageById(String id) {
+//        if (id.isBlank())
+//            throw new IllegalArgumentException("Input cannot be blank.");
+//
+//        return imageRepository.findById(UUID.fromString(id));
+//    }
 
-        return imageRepository.findById(UUID.fromString(id));
+    @Override
+    public byte[] getImageById(String imageId) {
+        Optional<Image> imageById = imageRepository.findById(UUID.fromString(imageId));
+        if(imageById.isEmpty()) throw new NoSuchElementException("Image not found");
+        return Base64.getDecoder().decode(imageById.get().getImage());
     }
 
     @Override

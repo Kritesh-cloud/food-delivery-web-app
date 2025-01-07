@@ -59,6 +59,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Autowired
     private RestaurantRepository restaurantRepository;
 
+    @Autowired
+    private StaffIdServiceImpl staffIdService;
+
     @Override
     public BasicResponse signUp(User user, MultipartFile profileImage) throws IOException {
         Optional<User> userEmail = userRepository.findByEmail(user.getEmail());
@@ -95,6 +98,22 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public User findUserById(String userId){
+        Optional<User> user = userRepository.findById(UUID.fromString(userId));
+
+        if(user.isEmpty()) throw new NoSuchElementException("User not found");
+
+        return User.builder()
+                .id(user.get().getId())
+                .name(user.get().getName())
+                .email(user.get().getEmail())
+                .profileUrl(user.get().getProfileUrl())
+                .authoritySet(user.get().getAuthoritySet())
+                .build();
+    }
+
+
+    @Override
     public User userInfo() {
         UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
         User user = userAuth.getUser();
@@ -126,19 +145,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         checkForAuthorityLevel(authority);
         Optional<Authority> newAuthority = authorityRepository.findByAuthority(authority);
 
+        if (authority.equalsIgnoreCase("staff")) {
+            Restaurant restaurant = restaurantService.getOwnerRestaurant();
+            staffIdService.addToStaffId(String.valueOf(user.get().getId()),restaurant);
+        }
+
         Set<Authority> authoritySet = user.get().getAuthoritySet();
         authoritySet.add(newAuthority.get());
         user.get().setAuthoritySet(authoritySet);
 
-        User savedUser = userRepository.save(user.get());
-
-        if (authority.equalsIgnoreCase("staff")) {
-            Restaurant restaurant = restaurantService.getOwnerRestaurant();
-//            Set<User> staffSet = restaurant.getStaffSet();
-//            staffSet.add(savedUser);
-//            restaurant.setStaffSet(staffSet);
-            restaurantRepository.save(restaurant);
-        }
+        userRepository.save(user.get());
         return BasicResponse.builder().status(true).result(true).code(200).message("Authority assigned successfully").build();
     }
 
@@ -153,10 +169,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         if (authority.equalsIgnoreCase("staff")) {
             Restaurant restaurant = restaurantService.getOwnerRestaurant();
-//            Set<String> staffSet = restaurant.getStaffSet();
-//            staffSet.remove(user.get());
-//            restaurant.setStaffSet(staffSet);
-            restaurantRepository.save(restaurant);
+            staffIdService.removeByStaffId(String.valueOf(user.get().getId()),restaurant);
         }
 
         Set<Authority> authoritySet = user.get().getAuthoritySet();

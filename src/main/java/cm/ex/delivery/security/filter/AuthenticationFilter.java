@@ -70,7 +70,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         }
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            System.out.println("Bearer filter");
+            System.out.println("Bearer filter : "+authHeader.toString());
             final String token = authHeader.substring(7);
             UserAuth auth = userTokenAuth(token);
             if (!auth.isAuthenticated()) {

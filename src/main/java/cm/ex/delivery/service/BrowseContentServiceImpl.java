@@ -9,6 +9,7 @@ import cm.ex.delivery.request.BrowseListDto;
 import cm.ex.delivery.response.BasicResponse;
 import cm.ex.delivery.response.BrowseContentResponse;
 import cm.ex.delivery.service.interfaces.BrowseContentService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,10 @@ public class BrowseContentServiceImpl implements BrowseContentService {
 
     @Autowired
     private IdHolderRepository idHolderRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
 
     @Override
     public BasicResponse createBrowseContent(BrowseListDto browseListDto) {
@@ -69,6 +74,44 @@ public class BrowseContentServiceImpl implements BrowseContentService {
     }
 
     @Override
+    public BrowseContentResponse getBrowseContentIdResponseById(String id) {
+
+        Optional<BrowseContent> browseContent = browseContentRepository.findById(Long.valueOf(id));
+        if (browseContent.isEmpty()) throw new NoSuchElementException("Browse Content Not found");
+
+        BrowseContentResponse browseContentResponse = modelMapper.map(browseContent, BrowseContentResponse.class);
+        List<IdHolder> idHolderListByBCId = listIdHolderByBrowseContentId(String.valueOf(browseContent.get().getId()));
+        browseContentResponse.setIds(idHolderListByBCId.stream().map(
+                idHolder -> {
+                    return String.valueOf(idHolder.getId());
+                }
+        ).toList());
+
+        return browseContentResponse;
+    }
+
+    @Override
+    public List<BrowseContentResponse> listBrowseContentIdResponse() {
+
+        List<BrowseContent> browseContentList = browseContentRepository.findAll();
+
+        List<BrowseContentResponse> browseContentResponseList = new ArrayList<>();
+        for (BrowseContent bc : browseContentList) {
+            BrowseContentResponse browseContentResponse = modelMapper.map(bc, BrowseContentResponse.class);
+            List<IdHolder> idHolderListByBCId = listIdHolderByBrowseContentId(String.valueOf(bc.getId()));
+            browseContentResponse.setIds(idHolderListByBCId.stream().map(
+                    idHolder -> {
+                        return String.valueOf(idHolder.getId());
+                    }
+            ).toList());
+            browseContentResponseList.add(browseContentResponse);
+        }
+
+        return browseContentResponseList.isEmpty() ? List.of() : browseContentResponseList;
+    }
+
+
+    @Override
     public BrowseContent getBrowseContentById(String browseContentId) {
         Optional<BrowseContent> browseContent = browseContentRepository.findById(Long.valueOf(browseContentId));
         return browseContent.orElseGet(BrowseContent::new);
@@ -83,6 +126,16 @@ public class BrowseContentServiceImpl implements BrowseContentService {
     @Override
     public BasicResponse updateOrder(int currentOrder, int newOrder) {
         return null;
+    }
+
+    @Override
+    public BasicResponse addBrowseContentItem(String browseContentId, String itemId){
+
+        Optional<BrowseContent> browseContent = browseContentRepository.findById(Long.valueOf(browseContentId));
+        if(browseContent.isEmpty()) throw new NoSuchElementException("Browse Content not found");
+
+        idHolderService.addToIdHolder(itemId,"restaurant",browseContent.get());
+        return BasicResponse.builder().status(true).code(200).message("Item added to Browse Content successfully").build();
     }
 
     @Override
@@ -101,5 +154,10 @@ public class BrowseContentServiceImpl implements BrowseContentService {
 
         browseContentRepository.delete(browseContent.get());
         return BasicResponse.builder().status(true).code(200).message("Browse Content deleted successfully").build();
+    }
+
+    private List<IdHolder> listIdHolderByBrowseContentId(String browseContentId) {
+        List<IdHolder> idHolderList = idHolderRepository.findByBrowseContentId_Id(Long.valueOf(browseContentId));
+        return idHolderList.isEmpty() ? List.of() : idHolderList;
     }
 }

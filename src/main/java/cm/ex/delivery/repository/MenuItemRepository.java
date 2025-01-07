@@ -14,6 +14,6 @@ public interface MenuItemRepository  extends JpaRepository<MenuItem, Long> {
 
     List<MenuItem> findByMenuCategory(MenuCategory menuCategory);
 
-    @Query("SELECT mi FROM MenuItem mi WHERE mi.menuCategory = :menuCategory ORDER BY mi.itemOrder ASC")
-    List<MenuItem> findByMenuCategoryOrdered(@Param("menuCategory") MenuCategory menuCategory);
+//    @Query("SELECT mi FROM MenuItem mi WHERE mi.menuCategory = :menuCategory ORDER BY mi.itemOrder ASC")
+//    List<MenuItem> findByMenuCategoryOrdered(@Param("menuCategory") MenuCategory menuCategory);
 }

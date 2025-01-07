@@ -2,9 +2,11 @@ package cm.ex.delivery.service;
 
 import cm.ex.delivery.entity.BrowseContent;
 import cm.ex.delivery.entity.IdHolder;
+import cm.ex.delivery.repository.BrowseContentRepository;
 import cm.ex.delivery.repository.IdHolderRepository;
 import cm.ex.delivery.response.BasicResponse;
 import cm.ex.delivery.service.interfaces.IdHolderService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,19 +18,25 @@ import java.util.Optional;
 public class IdHolderServiceImpl implements IdHolderService {
 
     @Autowired
+    private BrowseContentRepository browseContentRepository;
+
+    @Autowired
     private IdHolderRepository idHolderRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public IdHolder addToIdHolder(String dataId, String dataType, BrowseContent browseContentId) {
         return idHolderRepository.save(new IdHolder(dataId, dataType, browseContentId));
     }
 
-    @Override
-    public IdHolder findById(String itemId) {
-        Optional<IdHolder> idHolder = idHolderRepository.findById(Long.valueOf(itemId));
-        if (idHolder.isEmpty()) throw new NoSuchElementException("Item not found");
-        return idHolder.get();
-    }
+//    @Override
+//    public IdHolder findById(String itemId) {
+//        Optional<IdHolder> idHolder = idHolderRepository.findById(Long.valueOf(itemId));
+//        if (idHolder.isEmpty()) throw new NoSuchElementException("Item not found");
+//        return idHolder.get();
+//    }
 
     @Override
     public List<IdHolder> listIdHolderByBrowseContentId(String browseContentId) {
@@ -43,13 +51,37 @@ public class IdHolderServiceImpl implements IdHolderService {
     }
 
     @Override
+    public List<IdHolder> listAllIdHolderDivideByContentId(){
+
+//        List<BrowseContent> browseContentList = browseContentRepository.findAll();
+//
+//        List<BrowseContentResponse> browseContentResponseList = new ArrayList<>();
+//        for(BrowseContent bc : browseContentList){
+//            BrowseContentResponse browseContentResponse = modelMapper.map(bc, BrowseContentResponse.class);
+//            List<IdHolder> idHolderListByBCId = listIdHolderByBrowseContentId(String.valueOf(bc.getId()));
+//            browseContentResponse.setIds(idHolderListByBCId.stream().map(
+//                    idHolder -> {
+//                        return String.valueOf(idHolder.getId());
+//                    }
+//            ).toList());
+//            browseContentResponseList.add(browseContentResponse);
+//        }
+//
+//        return browseContentResponseList.isEmpty() ? List.of() : browseContentResponseList;;
+        return List.of();
+    }
+
+    @Override
     public BasicResponse removeByBrowseContentIdAndItemId(String browseContentId, String itemId) {
-        List<IdHolder> idHolderList = listIdHolderByBrowseContentId(browseContentId);
-        IdHolder idHolder = findById(itemId);
-        if (idHolderList.contains(idHolder)) {
-            idHolderRepository.delete(idHolder);
-            return BasicResponse.builder().status(true).code(200).message("Item deleted successfully").build();
-        }
+        int bcIdInt = Integer.parseInt(browseContentId);
+        System.out.println("bcIdInt: "+bcIdInt);
+        Optional<BrowseContent> browseContent = browseContentRepository.findById(Long.valueOf(bcIdInt));
+        if(browseContent.isEmpty()) throw new NoSuchElementException("Browse content not found");
+
+        Optional<IdHolder> idHolder = idHolderRepository.findByDataIdAndBrowseContentId(itemId,browseContent.get());
+        if(idHolder.isEmpty()) throw new NoSuchElementException("No restaurant found to remove from browse content");
+        idHolderRepository.delete(idHolder.get());
+
         return BasicResponse.builder().status(false).code(409).message("Unauthorized access to delete this item").build();
     }
 

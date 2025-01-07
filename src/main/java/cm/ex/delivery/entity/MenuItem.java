@@ -16,10 +16,6 @@ public class MenuItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int quantity;
-
-    private int itemOrder;
-
     private String name;
 
     private double price;
@@ -30,10 +26,16 @@ public class MenuItem {
     @JoinColumn(name = "menu_category_id") // Foreign key column
     private MenuCategory menuCategory;
 
-    public MenuItem(int itemOrder, String name, double price, MenuCategory menuCategory) {
-        this.itemOrder = itemOrder;
+    public MenuItem(String name, double price, MenuCategory menuCategory) {
         this.name = name;
         this.price = price;
+        this.menuCategory = menuCategory;
+    }
+
+    public MenuItem(String name, double price, double discount, MenuCategory menuCategory) {
+        this.name = name;
+        this.price = price;
+        this.discount = discount;
         this.menuCategory = menuCategory;
     }
 }
