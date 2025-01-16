@@ -71,35 +71,36 @@ public class DatabasePopulate {
 
 
     private void populateCategory(CategoryRepository categoryRepository, ImageRepository imageRepository) throws IOException {
+        if (categoryRepository.count() == 0) {
+            String path = "http://localhost:8080/image/";
+            Image barbecue = saveImage("/category/barbecue", ".png", imageRepository);
+            Image burger = saveImage("/category/burger", ".png", imageRepository);
+            Image chinese = saveImage("/category/chinese", ".png", imageRepository);
+            Image friedChicken = saveImage("/category/fried-chicken", ".png", imageRepository);
+            Image friedRice = saveImage("/category/fried-rice", ".png", imageRepository);
+            Image indian = saveImage("/category/indian", ".png", imageRepository);
+            Image italian = saveImage("/category/italian", ".png", imageRepository);
+            Image mexican = saveImage("/category/mexican", ".png", imageRepository);
+            Image momo = saveImage("/category/momo", ".png", imageRepository);
+            Image sandwich = saveImage("/category/sandwich", ".png", imageRepository);
+            Image softDrink = saveImage("/category/soft-drink", ".png", imageRepository);
+            Image sushi = saveImage("/category/sushi", ".png", imageRepository);
 
-        String path = "http://localhost:8080/image/";
-        Image barbecue = saveImage("/category/barbecue", ".png", imageRepository);
-        Image burger = saveImage("/category/burger", ".png", imageRepository);
-        Image chinese = saveImage("/category/chinese", ".png", imageRepository);
-        Image friedChicken = saveImage("/category/fried-chicken", ".png", imageRepository);
-        Image friedRice = saveImage("/category/fried-rice", ".png", imageRepository);
-        Image indian = saveImage("/category/indian", ".png", imageRepository);
-        Image italian = saveImage("/category/italian", ".png", imageRepository);
-        Image mexican = saveImage("/category/mexican", ".png", imageRepository);
-        Image momo = saveImage("/category/momo", ".png", imageRepository);
-        Image sandwich = saveImage("/category/sandwich", ".png", imageRepository);
-        Image softDrink = saveImage("/category/soft-drink", ".png", imageRepository);
-        Image sushi = saveImage("/category/sushi", ".png", imageRepository);
+            categoryRepository.save(new Category("Barbecue", path + barbecue.getId()));
+            categoryRepository.save(new Category("Burger", path + burger.getId()));
+            categoryRepository.save(new Category("Chinese", path + chinese.getId()));
+            categoryRepository.save(new Category("Fried Chicken", path + friedChicken.getId()));
+            categoryRepository.save(new Category("Fried Rice", path + friedRice.getId()));
+            categoryRepository.save(new Category("Indian", path + indian.getId()));
+            categoryRepository.save(new Category("Italian", path + italian.getId()));
+            categoryRepository.save(new Category("Mexican", path + mexican.getId()));
+            categoryRepository.save(new Category("Momo", path + momo.getId()));
+            categoryRepository.save(new Category("Sandwich", path + sandwich.getId()));
+            categoryRepository.save(new Category("Soft Drink", path + softDrink.getId()));
+            categoryRepository.save(new Category("Sushi", path + sushi.getId()));
 
-        categoryRepository.save(new Category("Barbecue",path+barbecue.getId()));
-        categoryRepository.save(new Category("Burger",path+burger.getId()));
-        categoryRepository.save(new Category("Chinese",path+chinese.getId()));
-        categoryRepository.save(new Category("Fried Chicken",path+friedChicken.getId()));
-        categoryRepository.save(new Category("Fried Rice",path+friedRice.getId()));
-        categoryRepository.save(new Category("Indian",path+indian.getId()));
-        categoryRepository.save(new Category("Italian",path+italian.getId()));
-        categoryRepository.save(new Category("Mexican",path+mexican.getId()));
-        categoryRepository.save(new Category("Momo",path+momo.getId()));
-        categoryRepository.save(new Category("Sandwich",path+sandwich.getId()));
-        categoryRepository.save(new Category("Soft Drink",path+softDrink.getId()));
-        categoryRepository.save(new Category("Sushi",path+sushi.getId()));
-
-        System.out.println("Category Repository has been populated with 12 initial categories.");
+            System.out.println("Category Repository has been populated with 12 initial categories.");
+        }
     }
 
     private void populateAuthority(AuthorityRepository authorityRepository) {
@@ -450,22 +451,21 @@ public class DatabasePopulate {
             MenuCategory menuCategory1a = menuCategoryRepository.save(new MenuCategory(0, "Momo", restaurant1.get()));
             MenuCategory menuCategory1b = menuCategoryRepository.save(new MenuCategory(0, "Pizza", restaurant1.get()));
             MenuCategory menuCategory1c = menuCategoryRepository.save(new MenuCategory(0, "Burger", restaurant1.get()));
-            List<MenuCategory> menuCategoryList1 = menuCategoryRepository.findByRestaurantId(restaurant1.get());
 
             menuItemRepository.save(new MenuItem("Veg Momo", 120, menuCategory1a));
             menuItemRepository.save(new MenuItem("Buff Momo", 140, menuCategory1a));
             menuItemRepository.save(new MenuItem("Chicken Momo", 150, menuCategory1a));
             menuItemRepository.save(new MenuItem("Pork Momo", 180, menuCategory1a));
 
-            MenuItem menuItem1ba = menuItemRepository.save(new MenuItem("Veg Pizza", 220, menuCategory1b));
-            MenuItem menuItem1bb = menuItemRepository.save(new MenuItem("Buff Pizza", 240, menuCategory1b));
-            MenuItem menuItem1bc = menuItemRepository.save(new MenuItem("Chicken Pizza", 250, menuCategory1b));
-            MenuItem menuItem1bd = menuItemRepository.save(new MenuItem("Pork Pizza", 280, menuCategory1b));
+            menuItemRepository.save(new MenuItem("Veg Pizza", 220, menuCategory1b));
+            menuItemRepository.save(new MenuItem("Buff Pizza", 240, menuCategory1b));
+            menuItemRepository.save(new MenuItem("Chicken Pizza", 250, menuCategory1b));
+            menuItemRepository.save(new MenuItem("Pork Pizza", 280, menuCategory1b));
 
-            MenuItem menuItem1ca = menuItemRepository.save(new MenuItem("Veg Burger", 220, menuCategory1c));
-            MenuItem menuItem1cb = menuItemRepository.save(new MenuItem("Buff Burger", 240, menuCategory1c));
-            MenuItem menuItem1cc = menuItemRepository.save(new MenuItem("Chicken Burger", 250, menuCategory1c));
-            MenuItem menuItem1cd = menuItemRepository.save(new MenuItem("Pork Burger", 280, menuCategory1c));
+            menuItemRepository.save(new MenuItem("Veg Burger", 220, menuCategory1c));
+            menuItemRepository.save(new MenuItem("Buff Burger", 240, menuCategory1c));
+            menuItemRepository.save(new MenuItem("Chicken Burger", 250, menuCategory1c));
+            menuItemRepository.save(new MenuItem("Pork Burger", 280, menuCategory1c));
 
 
             Optional<User> user2 = userRepository.findByEmail("owner2@gmail.com");
@@ -474,25 +474,70 @@ public class DatabasePopulate {
             MenuCategory menuCategory2a = menuCategoryRepository.save(new MenuCategory(0, "Chow min", restaurant2.get()));
             MenuCategory menuCategory2b = menuCategoryRepository.save(new MenuCategory(0, "Naan", restaurant2.get()));
             MenuCategory menuCategory2c = menuCategoryRepository.save(new MenuCategory(0, "Burger", restaurant2.get()));
-            List<MenuCategory> menuCategoryList2 = menuCategoryRepository.findByRestaurantId(restaurant2.get());
 
-            MenuItem menuItem2aa = menuItemRepository.save(new MenuItem("Veg Chow min", 120, menuCategory2a));
-            MenuItem menuItem2ab = menuItemRepository.save(new MenuItem("Buff Chow min", 140, menuCategory2a));
-            MenuItem menuItem2ac = menuItemRepository.save(new MenuItem("Chicken Chow min", 150, menuCategory2a));
-            MenuItem menuItem2ad = menuItemRepository.save(new MenuItem("Pork Chow min", 180, menuCategory2a));
+            menuItemRepository.save(new MenuItem("Veg Chow min", 120, menuCategory2a));
+            menuItemRepository.save(new MenuItem("Buff Chow min", 140, menuCategory2a));
+            menuItemRepository.save(new MenuItem("Chicken Chow min", 150, menuCategory2a));
+            menuItemRepository.save(new MenuItem("Pork Chow min", 180, menuCategory2a));
 
-            MenuItem menuItem2ba = menuItemRepository.save(new MenuItem("Butte Naan", 220, menuCategory2b));
-            MenuItem menuItem2bb = menuItemRepository.save(new MenuItem("Buff Keema Naan", 240, menuCategory2b));
-            MenuItem menuItem2bc = menuItemRepository.save(new MenuItem("Chicken Keema Naan", 250, menuCategory2b));
-            MenuItem menuItem2bd = menuItemRepository.save(new MenuItem("Pork Keema Naan", 280, menuCategory2b));
+            menuItemRepository.save(new MenuItem("Butte Naan", 220, menuCategory2b));
+            menuItemRepository.save(new MenuItem("Buff Keema Naan", 240, menuCategory2b));
+            menuItemRepository.save(new MenuItem("Chicken Keema Naan", 250, menuCategory2b));
+            menuItemRepository.save(new MenuItem("Pork Keema Naan", 280, menuCategory2b));
 
-            MenuItem menuItem2ca = menuItemRepository.save(new MenuItem("Veg Burger", 220, menuCategory2c));
-            MenuItem menuItem2cb = menuItemRepository.save(new MenuItem("Buff Burger", 240, menuCategory2c));
-            MenuItem menuItem2cc = menuItemRepository.save(new MenuItem("Chicken Burger", 250, menuCategory2c));
-            MenuItem menuItem2cd = menuItemRepository.save(new MenuItem("Pork Burger", 280, menuCategory2c));
+            menuItemRepository.save(new MenuItem("Veg Burger", 220, menuCategory2c));
+            menuItemRepository.save(new MenuItem("Buff Burger", 240, menuCategory2c));
+            menuItemRepository.save(new MenuItem("Chicken Burger", 250, menuCategory2c));
+            menuItemRepository.save(new MenuItem("Pork Burger", 280, menuCategory2c));
 
 
-            System.out.println("Menu Category and Item Repository has been populated with 2(users) x 3(category) x 4(items) = 24(items) initial menu items");
+            Optional<User> user3 = userRepository.findByEmail("owner3@gmail.com");
+            Optional<Restaurant> restaurant3 = restaurantRepository.findByOwnerId(user3.get());
+
+            MenuCategory menuCategory3a = menuCategoryRepository.save(new MenuCategory(0, "Momo", restaurant3.get()));
+            MenuCategory menuCategory3b = menuCategoryRepository.save(new MenuCategory(0, "Pizza", restaurant3.get()));
+            MenuCategory menuCategory3c = menuCategoryRepository.save(new MenuCategory(0, "Burger", restaurant3.get()));
+
+            menuItemRepository.save(new MenuItem("Veg Momo", 120, menuCategory3a));
+            menuItemRepository.save(new MenuItem("Buff Momo", 140, menuCategory3a));
+            menuItemRepository.save(new MenuItem("Chicken Momo", 150, menuCategory3a));
+            menuItemRepository.save(new MenuItem("Pork Momo", 180, menuCategory3a));
+
+            menuItemRepository.save(new MenuItem("Veg Pizza", 220, menuCategory3b));
+            menuItemRepository.save(new MenuItem("Buff Pizza", 240, menuCategory3b));
+            menuItemRepository.save(new MenuItem("Chicken Pizza", 250, menuCategory3b));
+            menuItemRepository.save(new MenuItem("Pork Pizza", 280, menuCategory3b));
+
+            menuItemRepository.save(new MenuItem("Veg Burger", 220, menuCategory3c));
+            menuItemRepository.save(new MenuItem("Buff Burger", 240, menuCategory3c));
+            menuItemRepository.save(new MenuItem("Chicken Burger", 250, menuCategory3c));
+            menuItemRepository.save(new MenuItem("Pork Burger", 280, menuCategory3c));
+
+
+            Optional<User> user4 = userRepository.findByEmail("owner4@gmail.com");
+            Optional<Restaurant> restaurant4 = restaurantRepository.findByOwnerId(user4.get());
+
+            MenuCategory menuCategory4a = menuCategoryRepository.save(new MenuCategory(0, "Chow min", restaurant4.get()));
+            MenuCategory menuCategory4b = menuCategoryRepository.save(new MenuCategory(0, "Naan", restaurant4.get()));
+            MenuCategory menuCategory4c = menuCategoryRepository.save(new MenuCategory(0, "Burger", restaurant4.get()));
+
+            menuItemRepository.save(new MenuItem("Veg Chow min", 120, menuCategory4a));
+            menuItemRepository.save(new MenuItem("Buff Chow min", 140, menuCategory4a));
+            menuItemRepository.save(new MenuItem("Chicken Chow min", 150, menuCategory4a));
+            menuItemRepository.save(new MenuItem("Pork Chow min", 180, menuCategory4a));
+
+            menuItemRepository.save(new MenuItem("Butte Naan", 220, menuCategory4b));
+            menuItemRepository.save(new MenuItem("Buff Keema Naan", 240, menuCategory4b));
+            menuItemRepository.save(new MenuItem("Chicken Keema Naan", 250, menuCategory4b));
+            menuItemRepository.save(new MenuItem("Pork Keema Naan", 280, menuCategory4b));
+
+            menuItemRepository.save(new MenuItem("Veg Burger", 220, menuCategory4c));
+            menuItemRepository.save(new MenuItem("Buff Burger", 240, menuCategory4c));
+            menuItemRepository.save(new MenuItem("Chicken Burger", 250, menuCategory4c));
+            menuItemRepository.save(new MenuItem("Pork Burger", 280, menuCategory4c));
+
+
+            System.out.println("Menu Category and Item Repository has been populated with 4(users) x 3(category) x 4(items) = 48(items) initial menu items");
         }
     }
 
@@ -582,6 +627,8 @@ public class DatabasePopulate {
             idHolderRepository.save(new IdHolder(restaurantList.get(2).getId().toString(), "restaurant", browseContentR1));
             idHolderRepository.save(new IdHolder(restaurantList.get(3).getId().toString(), "restaurant", browseContentR1));
             idHolderRepository.save(new IdHolder(restaurantList.get(4).getId().toString(), "restaurant", browseContentR1));
+            idHolderRepository.save(new IdHolder(restaurantList.get(5).getId().toString(), "restaurant", browseContentR1));
+            idHolderRepository.save(new IdHolder(restaurantList.get(6).getId().toString(), "restaurant", browseContentR1));
 
             idHolderRepository.save(new IdHolder(restaurantList.get(2).getId().toString(), "restaurant", browseContentR2));
             idHolderRepository.save(new IdHolder(restaurantList.get(3).getId().toString(), "restaurant", browseContentR2));
@@ -589,14 +636,19 @@ public class DatabasePopulate {
             idHolderRepository.save(new IdHolder(restaurantList.get(5).getId().toString(), "restaurant", browseContentR2));
             idHolderRepository.save(new IdHolder(restaurantList.get(6).getId().toString(), "restaurant", browseContentR2));
 
-            idHolderRepository.save(new IdHolder(restaurantList.get(5).getId().toString(), "restaurant", browseContentR3));
-            idHolderRepository.save(new IdHolder(restaurantList.get(6).getId().toString(), "restaurant", browseContentR3));
+            idHolderRepository.save(new IdHolder(restaurantList.get(3).getId().toString(), "restaurant", browseContentR3));
+            idHolderRepository.save(new IdHolder(restaurantList.get(1).getId().toString(), "restaurant", browseContentR3));
             idHolderRepository.save(new IdHolder(restaurantList.get(7).getId().toString(), "restaurant", browseContentR3));
             idHolderRepository.save(new IdHolder(restaurantList.get(8).getId().toString(), "restaurant", browseContentR3));
             idHolderRepository.save(new IdHolder(restaurantList.get(0).getId().toString(), "restaurant", browseContentR3));
 
-            System.out.println("restaurant browse content (3) done");
+            idHolderRepository.save(new IdHolder(restaurantList.get(0).getId().toString(), "restaurant", browseContentR4));
+            idHolderRepository.save(new IdHolder(restaurantList.get(2).getId().toString(), "restaurant", browseContentR4));
+            idHolderRepository.save(new IdHolder(restaurantList.get(4).getId().toString(), "restaurant", browseContentR4));
+            idHolderRepository.save(new IdHolder(restaurantList.get(6).getId().toString(), "restaurant", browseContentR4));
+            idHolderRepository.save(new IdHolder(restaurantList.get(8).getId().toString(), "restaurant", browseContentR4));
 
+            System.out.println("restaurant browse content (3) done");
         }
     }
 

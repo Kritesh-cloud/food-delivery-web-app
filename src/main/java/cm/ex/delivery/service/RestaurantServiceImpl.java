@@ -127,18 +127,20 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     public List<RestaurantResponse> listAllRestaurantDetails() {
         List<Restaurant> restaurantList = restaurantRepository.findAll();
-
+        System.out.println("restaurantList count: "+restaurantList.size());
+        System.out.println("Test l 0");
         if (restaurantList.isEmpty()) {
             return List.of(); // Return empty list immediately if no restaurants found
         }
-
-        return restaurantList.stream().map(restaurant -> {
+        System.out.println("Test l 1");
+        List<RestaurantResponse> restaurantResponseList = restaurantList.stream().map(restaurant -> {
             // Map restaurant to RestaurantResponse
             RestaurantResponse restaurantResponse = modelMapper.map(restaurant, RestaurantResponse.class);
-
+            System.out.println("Test l 2");
             // Set owner
             restaurantResponse.setOwner(userToSendableUser(restaurant.getOwnerId()));
 
+            System.out.println("Test l 3");
             // Set image gallery
             restaurantResponse.setImageGalleryList(
                     restaurant.getImageGallerySet().stream()
@@ -146,23 +148,30 @@ public class RestaurantServiceImpl implements RestaurantService {
                             .toList()
             );
 
+            System.out.println("Test l 4");
             // Set menu categories with items
             List<MenuCategoryResponse> menuCategoryResponses = menuCategoryService
                     .listMenuCategoryByOrder(restaurant.getId().toString())
                     .stream()
                     .peek(menuCategoryResponse -> {
                         // Set menu items for each category
+                        System.out.println("Test l 4 1");
                         List<MenuItemResponse> menuItemResponses = menuItemService.listMenuItemByOrder(
                                 menuCategoryResponse.getName(),
                                 menuCategoryResponse.getRestaurantId()
                         );
                         menuCategoryResponse.setMenuItemResponseList(menuItemResponses);
+                        System.out.println("Test l 4 2");
                     })
                     .toList();
-
+            System.out.println("Test l 5");
             restaurantResponse.setMenuCategoryResponses(menuCategoryResponses);
+            System.out.println("Test l 6");
+            System.out.println();
             return restaurantResponse;
         }).toList();
+        System.out.println("Test l 3");
+        return restaurantResponseList;
     }
 
     @Override
@@ -225,23 +234,47 @@ public class RestaurantServiceImpl implements RestaurantService {
             throw new IllegalArgumentException("Invalid browseId format: " + browseId, e);
         }
 
+        System.out.println("browseIdInt: "+browseIdInt);
+        System.out.println("Test 0");
         // Fetch restaurant and browse content details
-        List<RestaurantResponse> restaurantResponseList = listAllRestaurantDetails();
-        List<BrowseContentResponse> browseContentResponseList = browseContentService.listAllBrowseContentByOrder();
+        try {
+            List<RestaurantResponse> restaurantResponseList = listAllRestaurantDetails();
+            System.out.println("Test 00");
+            List<BrowseContentResponse> browseContentResponseList = browseContentService.listAllBrowseContentByOrder();
 
-        // Check if browseIdInt is within bounds
-        if (browseIdInt < 0 || browseIdInt >= browseContentResponseList.size()) {
-            throw new IndexOutOfBoundsException("browseId index out of range: " + browseIdInt);
+            // Check if browseIdInt is within bounds
+            System.out.println("Test 1");
+            if (browseIdInt < 0 || browseIdInt >= browseContentResponseList.size()) {
+                throw new IndexOutOfBoundsException("browseId index out of range: " + browseIdInt);
+            }
+
+            // Fetch the list of restaurant IDs from the browse content
+            System.out.println("Test 2");
+            List<String> restaurantIds = browseContentResponseList.get(browseIdInt).getIds();
+
+            System.out.println("restaurantIds:");
+            restaurantIds.forEach(System.out::println);
+
+            System.out.println("Test 3");
+            // Filter restaurant responses based on IDs
+            List<RestaurantResponse> newRestaurantResponseList = restaurantResponseList.stream()
+                    .filter(restaurantResponse -> restaurantIds.contains(restaurantResponse.getId().toString())) // Match IDs
+                    .toList();
+
+            System.out.println("Test 4");
+            for (RestaurantResponse restaurant : newRestaurantResponseList) {
+                System.out.println(restaurant.toString());
+            }
+
+            return newRestaurantResponseList;
+        }
+        catch (Exception e){
+            System.out.println("Exc "+e);
         }
 
-        // Fetch the list of restaurant IDs from the browse content
-        List<String> restaurantIds = browseContentResponseList.get(browseIdInt).getIds();
-
-        // Filter restaurant responses based on IDs
-        return restaurantResponseList.stream()
-                .filter(restaurantResponse -> restaurantIds.contains(restaurantResponse.getId().toString())) // Match IDs
-                .toList();
+        return null;
     }
+
 
     @Override
     public List<ShortRestaurantResponse> listAllShortRestaurantDetailsByBrowseList(String browseId) {
