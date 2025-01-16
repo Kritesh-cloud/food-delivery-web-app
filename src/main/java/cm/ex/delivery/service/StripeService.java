@@ -6,6 +6,7 @@ import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,9 @@ public class StripeService {
 
     @Value("${stripe.secret.key}")
     private String secretKey;
+
+    @Autowired
+    private BasketServiceImpl basketService;
 
     public StripeResponseDto checkoutProducts(StripeRequestDto stripeRequestDto) {
         // Set your secret key. Remember to switch to your live secret key in production!
@@ -48,8 +52,8 @@ public class StripeService {
         SessionCreateParams params =
                 SessionCreateParams.builder()
                         .setMode(SessionCreateParams.Mode.PAYMENT)
-                        .setSuccessUrl("http://localhost:8080/success")
-                        .setCancelUrl("http://localhost:8080/cancel")
+                        .setSuccessUrl("http://localhost:5173/payment/success")
+                        .setCancelUrl("http://localhost:5173/payment/unsuccess")
                         .addLineItem(lineItem)
                         .build();
 
@@ -57,6 +61,7 @@ public class StripeService {
         Session session = null;
         try {
             session = Session.create(params);
+            basketService.emptyUserBasket();
         } catch (StripeException e) {
             //log the error
         }

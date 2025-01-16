@@ -4,6 +4,7 @@ import cm.ex.delivery.entity.User;
 import cm.ex.delivery.response.BasicResponse;
 import cm.ex.delivery.response.BrowseContentResponse;
 import cm.ex.delivery.response.RestaurantResponse;
+import cm.ex.delivery.response.ShortRestaurantResponse;
 import cm.ex.delivery.service.BrowseContentServiceImpl;
 import cm.ex.delivery.service.ImageServiceImpl;
 import cm.ex.delivery.service.RestaurantServiceImpl;
@@ -70,16 +71,24 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(restaurantService.listAllRestaurantDetails());
     }
 
+    @GetMapping("/list-short-restaurant-details")
+    public ResponseEntity<List<ShortRestaurantResponse>> listShortRestaurantDetails() {
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(restaurantService.listAllShortRestaurantDetails());
+    }
+
     @GetMapping("/list-restaurant-details-by-id/{id}")
     public ResponseEntity<RestaurantResponse> listRestaurantDetailsById(@PathVariable String id) {
         return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(restaurantService.getRestaurantDetailsById(id));
     }
 
-
-
     @GetMapping("/list-restaurant-details/{browseId}")
     public ResponseEntity<List<RestaurantResponse>> listRestaurantDetailsByBrowseList(@PathVariable String browseId) {
         return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(restaurantService.listAllRestaurantDetailsByBrowseList(browseId));
+    }
+
+    @GetMapping("/list-short-restaurant-details/{browseId}")
+    public ResponseEntity<List<ShortRestaurantResponse>> listShortRestaurantDetailsByBrowseList(@PathVariable String browseId) {
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(restaurantService.listAllShortRestaurantDetailsByBrowseList(browseId));
     }
 
     @GetMapping("/reverse-list-restaurant-details/{browseId}")

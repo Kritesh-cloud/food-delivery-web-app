@@ -113,7 +113,6 @@ public class BasketServiceImpl implements BasketService {
                 break;
             }
         }
-
         basket.setItemQuantitySet(itemQuantitySet);
         basketRepository.save(basket);
         return BasicResponse.builder().status(true).code(200).message("Item quantity updated in the basket").build();
@@ -144,6 +143,14 @@ public class BasketServiceImpl implements BasketService {
     }
 
     @Override
+    public BasicResponse emptyUserBasket(){
+        Basket basket = getUserBasket();
+        basket.setItemQuantitySet(new HashSet<>());
+        basketRepository.save(basket);
+        return BasicResponse.builder().status(true).code(200).message("All Items removed from the basket").build();
+    }
+
+    @Override
     public BasicResponse removeBasket(User ownerId) {
         Basket basket = getUserBasket();
         basketRepository.delete(basket);
@@ -152,10 +159,8 @@ public class BasketServiceImpl implements BasketService {
 
     public Basket getUserBasket() {
         UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
-
         Optional<Basket> basket = basketRepository.findByOwnerId(userAuth.getUser());
         if (basket.isPresent()) return basket.get();
-
         return basketRepository.save(new Basket(userAuth.getUser()));
     }
 }

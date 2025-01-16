@@ -45,8 +45,10 @@ public class SecurityConfiguration {
                                 .requestMatchers("/list-restaurant-details/*").permitAll()
                                 .requestMatchers("/list-restaurant-details-by-id/{id}").permitAll()
                                 .requestMatchers("/reverse-list-restaurant-details/{id}").permitAll()
-//                                .requestMatchers("/reverse-list-restaurant-details/{id}").permitAll()
-//
+                                .requestMatchers("/list-short-restaurant-details").permitAll()
+                                .requestMatchers("/list-short-restaurant-details/{id}").permitAll()
+//                                .requestMatchers("/list-short-restaurant-details").permitAll()
+//                                .requestMatchers("/list-short-restaurant-details").permitAll()
 
                                 .requestMatchers("/user-list").permitAll()
                                 .requestMatchers("/get-user/{userId}").permitAll()

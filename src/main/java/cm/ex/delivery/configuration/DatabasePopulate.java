@@ -51,11 +51,15 @@ public class DatabasePopulate {
     @Autowired
     private IdHolderRepository idHolderRepository;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
     @Bean
     CommandLineRunner initDatabase() {
         DatabasePopulate dbp = new DatabasePopulate();
         return args -> {
 
+            dbp.populateCategory(categoryRepository, imageRepository);
             dbp.populateAuthority(authorityRepository);
             dbp.populateUser(userRepository, authorityRepository, passwordEncoder, basketRepository);
             dbp.populateRestaurant(restaurantRepository, userRepository, imageRepository);
@@ -63,6 +67,39 @@ public class DatabasePopulate {
 //            dbp.populateBasket(menuItemRepository, userRepository, basketRepository);
             dbp.populateBrowseContent(browseContentRepository, restaurantRepository, idHolderRepository);
         };
+    }
+
+
+    private void populateCategory(CategoryRepository categoryRepository, ImageRepository imageRepository) throws IOException {
+
+        String path = "http://localhost:8080/image/";
+        Image barbecue = saveImage("/category/barbecue", ".png", imageRepository);
+        Image burger = saveImage("/category/burger", ".png", imageRepository);
+        Image chinese = saveImage("/category/chinese", ".png", imageRepository);
+        Image friedChicken = saveImage("/category/fried-chicken", ".png", imageRepository);
+        Image friedRice = saveImage("/category/fried-rice", ".png", imageRepository);
+        Image indian = saveImage("/category/indian", ".png", imageRepository);
+        Image italian = saveImage("/category/italian", ".png", imageRepository);
+        Image mexican = saveImage("/category/mexican", ".png", imageRepository);
+        Image momo = saveImage("/category/momo", ".png", imageRepository);
+        Image sandwich = saveImage("/category/sandwich", ".png", imageRepository);
+        Image softDrink = saveImage("/category/soft-drink", ".png", imageRepository);
+        Image sushi = saveImage("/category/sushi", ".png", imageRepository);
+
+        categoryRepository.save(new Category("Barbecue",path+barbecue.getId()));
+        categoryRepository.save(new Category("Burger",path+burger.getId()));
+        categoryRepository.save(new Category("Chinese",path+chinese.getId()));
+        categoryRepository.save(new Category("Fried Chicken",path+friedChicken.getId()));
+        categoryRepository.save(new Category("Fried Rice",path+friedRice.getId()));
+        categoryRepository.save(new Category("Indian",path+indian.getId()));
+        categoryRepository.save(new Category("Italian",path+italian.getId()));
+        categoryRepository.save(new Category("Mexican",path+mexican.getId()));
+        categoryRepository.save(new Category("Momo",path+momo.getId()));
+        categoryRepository.save(new Category("Sandwich",path+sandwich.getId()));
+        categoryRepository.save(new Category("Soft Drink",path+softDrink.getId()));
+        categoryRepository.save(new Category("Sushi",path+sushi.getId()));
+
+        System.out.println("Category Repository has been populated with 12 initial categories.");
     }
 
     private void populateAuthority(AuthorityRepository authorityRepository) {

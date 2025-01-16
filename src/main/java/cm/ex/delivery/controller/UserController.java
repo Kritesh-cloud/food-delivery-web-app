@@ -31,11 +31,13 @@ public class UserController {
             @RequestPart("restaurantInfo") Restaurant restaurantInfo,
             @RequestPart("icon") MultipartFile icon,
             @RequestPart("background") MultipartFile background,
-            @RequestPart("gallery") MultipartFile... gallery) {
+            @RequestPart("gallery") MultipartFile... gallery
+    ) {
         System.out.println(restaurantInfo.toString());
         System.out.println(icon.getOriginalFilename());
         System.out.println(background.getOriginalFilename());
         System.out.println(gallery.length);
+
         BasicResponse basicResponse = restaurantService.addRestaurant(restaurantInfo, icon, background, gallery);
         return ResponseEntity.status(HttpStatusCode.valueOf(basicResponse.getCode())).body(basicResponse);
     }

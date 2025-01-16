@@ -64,9 +64,11 @@ public class RestaurantServiceImpl implements RestaurantService {
             Image iconImage = imageService.addImage(icon);
             Image backgroundImage = imageService.addImage(icon);
             Set<Image> imageSet = new HashSet<>();
-            for (MultipartFile galleryImage : gallery) {
-                Image savedGalleryImage = imageService.addImage(galleryImage);
-                imageSet.add(savedGalleryImage);
+            if(gallery!=null) {
+                for (MultipartFile galleryImage : gallery) {
+                    Image savedGalleryImage = imageService.addImage(galleryImage);
+                    imageSet.add(savedGalleryImage);
+                }
             }
             restaurantInfo.setId(null);
             restaurantInfo.setIconUrl(path + iconImage.getId());
@@ -164,7 +166,20 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public RestaurantResponse getRestaurantDetailsById(String id){
+    public List<ShortRestaurantResponse> listAllShortRestaurantDetails() {
+        List<Restaurant> restaurantList = restaurantRepository.findAll();
+
+        if (restaurantList.isEmpty()) {
+            return List.of(); // Return empty list immediately if no restaurants found
+        }
+
+        return restaurantList.stream().map(restaurant -> {
+            return modelMapper.map(restaurant, ShortRestaurantResponse.class);
+        }).toList();
+    }
+
+    @Override
+    public RestaurantResponse getRestaurantDetailsById(String id) {
 
         Restaurant restaurant = getRestaurantById(id);
 
@@ -229,7 +244,46 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public List<RestaurantResponse> reverseListAllRestaurantDetailsByBrowseList(String browseId){
+    public List<ShortRestaurantResponse> listAllShortRestaurantDetailsByBrowseList(String browseId) {
+
+        int browseIdInt;
+
+        // Parse browseId into integer safely
+        try {
+            browseIdInt = Integer.parseInt(browseId);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid browseId format: " + browseId, e);
+        }
+
+        // Fetch restaurant and browse content details
+        List<ShortRestaurantResponse> shortRestaurantResponseList = restaurantRepository.findAll().stream().map(
+                restaurant -> {
+                    return modelMapper.map(restaurant, ShortRestaurantResponse.class);
+                }
+        ).toList();
+        List<BrowseContentResponse> browseContentResponseList = browseContentService.listAllBrowseContentByOrder();
+
+        // Check if browseIdInt is within bounds
+        if (browseIdInt < 0 || browseIdInt >= browseContentResponseList.size()) {
+            throw new IndexOutOfBoundsException("browseId index out of range: " + browseIdInt);
+        }
+
+        // Fetch the list of restaurant IDs from the browse content
+        List<String> restaurantIds = browseContentResponseList.get(browseIdInt).getIds();
+
+        // Filter restaurant responses based on IDs
+        return shortRestaurantResponseList.stream()
+                .filter(restaurantResponse -> restaurantIds.contains(restaurantResponse.getId().toString())) // Match IDs
+                .toList();
+    }
+
+    @Override
+    public List<MediumRestaurantResponse> listAllMediumRestaurantDetailsByBrowseList(String browseId) {
+        return List.of();
+    }
+
+    @Override
+    public List<RestaurantResponse> reverseListAllRestaurantDetailsByBrowseList(String browseId) {
         int browseIdInt;
 
         // Parse browseId into integer safely
@@ -256,6 +310,12 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .filter(restaurantResponse -> !restaurantIds.contains(restaurantResponse.getId().toString())) // Match IDs
                 .toList();
     }
+
+    @Override
+    public List<MediumRestaurantResponse> reverseListAllMeduimRestaurantDetailsByBrowseList(String browseId) {
+        return List.of();
+    }
+
     @Override
     public BasicResponse updateRestaurant(UpdateRestaurant restaurantInfo, MultipartFile icon, MultipartFile background, MultipartFile... gallery) {
         Optional<Restaurant> updateRestaurant = restaurantRepository.findById(restaurantInfo.getId());
@@ -381,13 +441,13 @@ public class RestaurantServiceImpl implements RestaurantService {
             if (Objects.requireNonNull(background.getOriginalFilename()).isEmpty())
                 throw new IllegalArgumentException("Invalid restaurant info input. Invalid background image.");
         }
-        if (validateList.contains("gallery")) {
-            for (MultipartFile file : gallery) {
-                if (Objects.requireNonNull(file.getOriginalFilename()).isEmpty())
-                    throw new IllegalArgumentException("Invalid restaurant info input. Invalid gallery images.");
-            }
-
-        }
+//        if (validateList.contains("gallery")) {
+//            for (MultipartFile file : gallery) {
+//                if (Objects.requireNonNull(file.getOriginalFilename()).isEmpty())
+//                    throw new IllegalArgumentException("Invalid restaurant info input. Invalid gallery images.");
+//            }
+//
+//        }
     }
 
     public Restaurant getRestaurant() {

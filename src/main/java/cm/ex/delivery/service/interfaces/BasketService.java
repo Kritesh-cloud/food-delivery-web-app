@@ -21,5 +21,7 @@ public interface BasketService {
 
     public BasicResponse removeItemFromBasket(String itemId);
 
+    public BasicResponse emptyUserBasket();
+
     public BasicResponse removeBasket(User ownerId);
 }
