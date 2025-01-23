@@ -64,7 +64,7 @@ public class RestaurantServiceImpl implements RestaurantService {
             Image iconImage = imageService.addImage(icon);
             Image backgroundImage = imageService.addImage(icon);
             Set<Image> imageSet = new HashSet<>();
-            if(gallery!=null) {
+            if (gallery != null) {
                 for (MultipartFile galleryImage : gallery) {
                     Image savedGalleryImage = imageService.addImage(galleryImage);
                     imageSet.add(savedGalleryImage);
@@ -94,6 +94,10 @@ public class RestaurantServiceImpl implements RestaurantService {
         return getRestaurant();
     }
 
+    @Override
+    public RestaurantResponse getOwnerRestaurantResponse() {
+        return getRestaurantDetailsById(String.valueOf(getRestaurant().getId()));
+    }
 
     @Override
     public Restaurant getRestaurantById(String id) {
@@ -127,7 +131,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     public List<RestaurantResponse> listAllRestaurantDetails() {
         List<Restaurant> restaurantList = restaurantRepository.findAll();
-        System.out.println("restaurantList count: "+restaurantList.size());
+        System.out.println("restaurantList count: " + restaurantList.size());
         System.out.println("Test l 0");
         if (restaurantList.isEmpty()) {
             return List.of(); // Return empty list immediately if no restaurants found
@@ -234,7 +238,7 @@ public class RestaurantServiceImpl implements RestaurantService {
             throw new IllegalArgumentException("Invalid browseId format: " + browseId, e);
         }
 
-        System.out.println("browseIdInt: "+browseIdInt);
+        System.out.println("browseIdInt: " + browseIdInt);
         System.out.println("Test 0");
         // Fetch restaurant and browse content details
         try {
@@ -267,9 +271,8 @@ public class RestaurantServiceImpl implements RestaurantService {
             }
 
             return newRestaurantResponseList;
-        }
-        catch (Exception e){
-            System.out.println("Exc "+e);
+        } catch (Exception e) {
+            System.out.println("Exc " + e);
         }
 
         return null;

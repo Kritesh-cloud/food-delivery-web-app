@@ -27,3 +27,23 @@ public class UpdateRestaurant {
     private String closingTime;
 
 }
+/*
+add
+iconChanged bool
+backgroundChanged bool
+newGalleryImageAdded bool
+removeGalleryImageIds arr
+
+remove
+approved
+backgroundUrl
+categoryList
+createdAt
+imageGalleryList
+menuCategoryResponse
+owner
+updatedAt
+
+
+* */
+

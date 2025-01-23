@@ -48,6 +48,11 @@ public class BrowseContentServiceImpl implements BrowseContentService {
         Optional<BrowseContent> browseContent = browseContentRepository.findById(Long.valueOf(browseContentId));
         if (browseContent.isEmpty()) throw new NoSuchElementException("Browse content not found");
 
+        Optional<IdHolder> idHolder = idHolderRepository.findByDataIdAndBrowseContentId(itemId,browseContent.get());
+        System.out.println("hi test, "+idHolder.get().toString());
+        if(idHolder.isPresent()) return BasicResponse.builder().status(true).code(200).message("Item already added to Browse Content.").build();
+
+
         idHolderService.addToIdHolder(itemId, browseContent.get().getType(), browseContent.get());
         return BasicResponse.builder().status(true).code(200).message("Item added to Browse Content successfully").build();
     }
@@ -101,11 +106,17 @@ public class BrowseContentServiceImpl implements BrowseContentService {
             List<IdHolder> idHolderListByBCId = listIdHolderByBrowseContentId(String.valueOf(bc.getId()));
             browseContentResponse.setIds(idHolderListByBCId.stream().map(
                     idHolder -> {
-                        return String.valueOf(idHolder.getId());
+                        return String.valueOf(idHolder.getDataId());
                     }
             ).toList());
             browseContentResponseList.add(browseContentResponse);
         }
+
+        System.out.println("br start");
+        for(BrowseContentResponse br: browseContentResponseList){
+            System.out.println(br.toString());
+        }
+        System.out.println("br end");
 
         return browseContentResponseList.isEmpty() ? List.of() : browseContentResponseList;
     }
@@ -130,9 +141,11 @@ public class BrowseContentServiceImpl implements BrowseContentService {
 
     @Override
     public BasicResponse addBrowseContentItem(String browseContentId, String itemId){
-
         Optional<BrowseContent> browseContent = browseContentRepository.findById(Long.valueOf(browseContentId));
         if(browseContent.isEmpty()) throw new NoSuchElementException("Browse Content not found");
+
+        Optional<IdHolder> idHolder = idHolderRepository.findByDataIdAndBrowseContentId(itemId,browseContent.get());
+        if(idHolder.isPresent()) return BasicResponse.builder().status(true).code(200).message("Item already added to Browse Content.").build();
 
         idHolderService.addToIdHolder(itemId,"restaurant",browseContent.get());
         return BasicResponse.builder().status(true).code(200).message("Item added to Browse Content successfully").build();

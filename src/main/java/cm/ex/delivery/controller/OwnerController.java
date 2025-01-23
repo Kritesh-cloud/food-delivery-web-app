@@ -7,6 +7,7 @@ import cm.ex.delivery.request.UpdateRestaurant;
 import cm.ex.delivery.response.BasicResponse;
 import cm.ex.delivery.response.MenuCategoryResponse;
 import cm.ex.delivery.response.MenuItemResponse;
+import cm.ex.delivery.response.RestaurantResponse;
 import cm.ex.delivery.service.MenuCategoryServiceImpl;
 import cm.ex.delivery.service.MenuItemServiceImpl;
 import cm.ex.delivery.service.RestaurantServiceImpl;
@@ -56,12 +57,17 @@ public class OwnerController {
         return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(restaurantService.getOwnerRestaurant());
     }
 
+    @GetMapping("/view-owner-restaurant")
+    public ResponseEntity<RestaurantResponse> viewOwnerRestaurant() {
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(restaurantService.getOwnerRestaurantResponse());
+    }
+
     @PostMapping("/update-restaurant")
     public ResponseEntity<BasicResponse> updateRestaurant(
             @RequestPart("restaurantInfo") UpdateRestaurant restaurantInfo,
-            @RequestPart("icon") MultipartFile icon,
-            @RequestPart("background") MultipartFile background,
-            @RequestPart("gallery") MultipartFile... gallery) {
+            @RequestPart(value = "icon", required = false) MultipartFile icon,
+            @RequestPart(value = "background", required = false) MultipartFile background,
+            @RequestPart(value = "gallery", required = false) MultipartFile... gallery) {
         BasicResponse basicResponse = restaurantService.updateRestaurant(restaurantInfo, icon, background, gallery);
         return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(basicResponse);
     }
@@ -112,6 +118,7 @@ public class OwnerController {
 
     @PostMapping("/delete-menu-item/{menuItemId}")
     public ResponseEntity<BasicResponse> deleteMenuItem(@PathVariable String menuItemId) throws AccessDeniedException {
+        System.out.println("menuItemId: "+menuItemId);
         BasicResponse basicResponse = menuItemService.removeByItemId(menuItemId);
         return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(basicResponse);
     }
