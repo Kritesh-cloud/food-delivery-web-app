@@ -401,7 +401,7 @@ public class RestaurantServiceImpl implements RestaurantService {
             return BasicResponse.builder().status(true).code(200).message("Restaurant account updated successfully").build();
         } catch (Exception e) {
             System.out.println("ERROR: " + e);
-            return BasicResponse.builder().status(false).code(409).message("Unable to updated restaurant account").build();
+            return BasicResponse.builder().status(false).code(409).message("Unable to updated restaurant account. ERR: "+e).build();
         }
 
     }

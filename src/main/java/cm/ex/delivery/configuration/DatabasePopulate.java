@@ -238,7 +238,7 @@ public class DatabasePopulate {
             Set<Image> imageGallerySet2 = new HashSet<>();
             Set<Image> imageGallerySet3 = new HashSet<>();
             Set<Image> imageGallerySet4 = new HashSet<>();
-            String imagePath = "/home/kritesh-thapa/allfile/coding/backend/SpringApi/FoodDeliveryWebApp/src/main/java/cm/ex/delivery/configuration/images";
+//            String imagePath = "/home/kritesh-thapa/allfile/coding/backend/SpringApi/FoodDeliveryWebApp/src/main/java/cm/ex/delivery/configuration/images";
             String path = "http://localhost:8080/image/";
 
             Image icon1 = saveImage("/restaurant/icon/icon1", ".png", imageRepository);
@@ -426,6 +426,22 @@ public class DatabasePopulate {
                     imageGallerySet1
             );
 
+            Restaurant restaurant10 = new Restaurant(
+                    "The Gourmet Haven",
+                    "A fine dining experience offering authentic Italian cuisine.",
+                    "123 Main St, New York, NY",
+                    "+1-234-567-8901",
+                    "contact@gourmethaven.com",
+                    path + background4.getId(),
+                    "11:00",
+                    "23:00",
+                    path + icon3.getId(),
+                    categorySet,
+                    user10.get(),
+//                    staffSet,
+                    imageGallerySet2
+            );
+
 
             restaurantRepository.save(restaurant1);
             restaurantRepository.save(restaurant2);
@@ -436,8 +452,9 @@ public class DatabasePopulate {
             restaurantRepository.save(restaurant7);
             restaurantRepository.save(restaurant8);
             restaurantRepository.save(restaurant9);
+            restaurantRepository.save(restaurant10);
 
-            System.out.println("Restaurant Repository has been populated with four(4) initial restaurants with images.");
+            System.out.println("Restaurant Repository has been populated with ten(10) initial restaurants with images.");
         }
     }
 
@@ -537,7 +554,147 @@ public class DatabasePopulate {
             menuItemRepository.save(new MenuItem("Pork Burger", 280, menuCategory4c));
 
 
-            System.out.println("Menu Category and Item Repository has been populated with 4(users) x 3(category) x 4(items) = 48(items) initial menu items");
+            System.out.println("===============================================================================");
+
+            Optional<User> user5 = userRepository.findByEmail("owner5@gmail.com");
+            Optional<Restaurant> restaurant5 = restaurantRepository.findByOwnerId(user5.get());
+
+            MenuCategory menuCategory5a = menuCategoryRepository.save(new MenuCategory(0, "Momo", restaurant5.get()));
+            MenuCategory menuCategory5b = menuCategoryRepository.save(new MenuCategory(0, "Pizza", restaurant5.get()));
+            MenuCategory menuCategory5c = menuCategoryRepository.save(new MenuCategory(0, "Burger", restaurant5.get()));
+
+            menuItemRepository.save(new MenuItem("Veg Momo", 120, menuCategory5a));
+            menuItemRepository.save(new MenuItem("Buff Momo", 140, menuCategory5a));
+            menuItemRepository.save(new MenuItem("Chicken Momo", 150, menuCategory5a));
+            menuItemRepository.save(new MenuItem("Pork Momo", 180, menuCategory5a));
+
+            menuItemRepository.save(new MenuItem("Veg Pizza", 220, menuCategory5b));
+            menuItemRepository.save(new MenuItem("Buff Pizza", 240, menuCategory5b));
+            menuItemRepository.save(new MenuItem("Chicken Pizza", 250, menuCategory5b));
+            menuItemRepository.save(new MenuItem("Pork Pizza", 280, menuCategory5b));
+
+            menuItemRepository.save(new MenuItem("Veg Burger", 220, menuCategory5c));
+            menuItemRepository.save(new MenuItem("Buff Burger", 240, menuCategory5c));
+            menuItemRepository.save(new MenuItem("Chicken Burger", 250, menuCategory5c));
+            menuItemRepository.save(new MenuItem("Pork Burger", 280, menuCategory5c));
+
+
+            Optional<User> user6 = userRepository.findByEmail("owner6@gmail.com");
+            Optional<Restaurant> restaurant6 = restaurantRepository.findByOwnerId(user6.get());
+
+            MenuCategory menuCategory6a = menuCategoryRepository.save(new MenuCategory(0, "Chow min", restaurant6.get()));
+            MenuCategory menuCategory6b = menuCategoryRepository.save(new MenuCategory(0, "Naan", restaurant6.get()));
+            MenuCategory menuCategory6c = menuCategoryRepository.save(new MenuCategory(0, "Burger", restaurant6.get()));
+
+            menuItemRepository.save(new MenuItem("Veg Chow min", 120, menuCategory6a));
+            menuItemRepository.save(new MenuItem("Buff Chow min", 140, menuCategory6a));
+            menuItemRepository.save(new MenuItem("Chicken Chow min", 150, menuCategory6a));
+            menuItemRepository.save(new MenuItem("Pork Chow min", 180, menuCategory6a));
+
+            menuItemRepository.save(new MenuItem("Butte Naan", 220, menuCategory6b));
+            menuItemRepository.save(new MenuItem("Buff Keema Naan", 240, menuCategory6b));
+            menuItemRepository.save(new MenuItem("Chicken Keema Naan", 250, menuCategory6b));
+            menuItemRepository.save(new MenuItem("Pork Keema Naan", 280, menuCategory6b));
+
+            menuItemRepository.save(new MenuItem("Veg Burger", 220, menuCategory6c));
+            menuItemRepository.save(new MenuItem("Buff Burger", 240, menuCategory6c));
+            menuItemRepository.save(new MenuItem("Chicken Burger", 250, menuCategory6c));
+            menuItemRepository.save(new MenuItem("Pork Burger", 280, menuCategory6c));
+
+
+            Optional<User> user7 = userRepository.findByEmail("owner7@gmail.com");
+            Optional<Restaurant> restaurant7 = restaurantRepository.findByOwnerId(user7.get());
+
+            MenuCategory menuCategory7a = menuCategoryRepository.save(new MenuCategory(0, "Momo", restaurant7.get()));
+            MenuCategory menuCategory7b = menuCategoryRepository.save(new MenuCategory(0, "Pizza", restaurant7.get()));
+            MenuCategory menuCategory7c = menuCategoryRepository.save(new MenuCategory(0, "Burger", restaurant7.get()));
+
+            menuItemRepository.save(new MenuItem("Veg Momo", 120, menuCategory7a));
+            menuItemRepository.save(new MenuItem("Buff Momo", 140, menuCategory7a));
+            menuItemRepository.save(new MenuItem("Chicken Momo", 150, menuCategory7a));
+            menuItemRepository.save(new MenuItem("Pork Momo", 180, menuCategory7a));
+
+            menuItemRepository.save(new MenuItem("Veg Pizza", 220, menuCategory7b));
+            menuItemRepository.save(new MenuItem("Buff Pizza", 240, menuCategory7b));
+            menuItemRepository.save(new MenuItem("Chicken Pizza", 250, menuCategory7b));
+            menuItemRepository.save(new MenuItem("Pork Pizza", 280, menuCategory7b));
+
+            menuItemRepository.save(new MenuItem("Veg Burger", 220, menuCategory7c));
+            menuItemRepository.save(new MenuItem("Buff Burger", 240, menuCategory7c));
+            menuItemRepository.save(new MenuItem("Chicken Burger", 250, menuCategory7c));
+            menuItemRepository.save(new MenuItem("Pork Burger", 280, menuCategory7c));
+
+
+            Optional<User> user8 = userRepository.findByEmail("owner8@gmail.com");
+            Optional<Restaurant> restaurant8 = restaurantRepository.findByOwnerId(user8.get());
+
+            MenuCategory menuCategory8a = menuCategoryRepository.save(new MenuCategory(0, "Chow min", restaurant8.get()));
+            MenuCategory menuCategory8b = menuCategoryRepository.save(new MenuCategory(0, "Naan", restaurant8.get()));
+            MenuCategory menuCategory8c = menuCategoryRepository.save(new MenuCategory(0, "Burger", restaurant8.get()));
+
+            menuItemRepository.save(new MenuItem("Veg Chow min", 120, menuCategory8a));
+            menuItemRepository.save(new MenuItem("Buff Chow min", 140, menuCategory8a));
+            menuItemRepository.save(new MenuItem("Chicken Chow min", 150, menuCategory8a));
+            menuItemRepository.save(new MenuItem("Pork Chow min", 180, menuCategory8a));
+
+            menuItemRepository.save(new MenuItem("Butte Naan", 220, menuCategory8b));
+            menuItemRepository.save(new MenuItem("Buff Keema Naan", 240, menuCategory8b));
+            menuItemRepository.save(new MenuItem("Chicken Keema Naan", 250, menuCategory8b));
+            menuItemRepository.save(new MenuItem("Pork Keema Naan", 280, menuCategory8b));
+
+            menuItemRepository.save(new MenuItem("Veg Burger", 220, menuCategory8c));
+            menuItemRepository.save(new MenuItem("Buff Burger", 240, menuCategory8c));
+            menuItemRepository.save(new MenuItem("Chicken Burger", 250, menuCategory8c));
+            menuItemRepository.save(new MenuItem("Pork Burger", 280, menuCategory8c));
+
+
+            System.out.println("------------------------------------------------------------------");
+            Optional<User> user9 = userRepository.findByEmail("owner9@gmail.com");
+            Optional<Restaurant> restaurant9 = restaurantRepository.findByOwnerId(user9.get());
+
+            MenuCategory menuCategory9a = menuCategoryRepository.save(new MenuCategory(0, "Momo", restaurant9.get()));
+            MenuCategory menuCategory9b = menuCategoryRepository.save(new MenuCategory(0, "Pizza", restaurant9.get()));
+            MenuCategory menuCategory9c = menuCategoryRepository.save(new MenuCategory(0, "Burger", restaurant9.get()));
+
+            menuItemRepository.save(new MenuItem("Veg Momo", 120, menuCategory9a));
+            menuItemRepository.save(new MenuItem("Buff Momo", 140, menuCategory9a));
+            menuItemRepository.save(new MenuItem("Chicken Momo", 150, menuCategory9a));
+            menuItemRepository.save(new MenuItem("Pork Momo", 180, menuCategory9a));
+
+            menuItemRepository.save(new MenuItem("Veg Pizza", 220, menuCategory9b));
+            menuItemRepository.save(new MenuItem("Buff Pizza", 240, menuCategory9b));
+            menuItemRepository.save(new MenuItem("Chicken Pizza", 250, menuCategory9b));
+            menuItemRepository.save(new MenuItem("Pork Pizza", 280, menuCategory9b));
+
+            menuItemRepository.save(new MenuItem("Veg Burger", 220, menuCategory9c));
+            menuItemRepository.save(new MenuItem("Buff Burger", 240, menuCategory9c));
+            menuItemRepository.save(new MenuItem("Chicken Burger", 250, menuCategory9c));
+            menuItemRepository.save(new MenuItem("Pork Burger", 280, menuCategory9c));
+
+
+            Optional<User> user10 = userRepository.findByEmail("owner10@gmail.com");
+            Optional<Restaurant> restaurant10 = restaurantRepository.findByOwnerId(user10.get());
+
+            MenuCategory menuCategory10a = menuCategoryRepository.save(new MenuCategory(0, "Chow min", restaurant10.get()));
+            MenuCategory menuCategory10b = menuCategoryRepository.save(new MenuCategory(0, "Naan", restaurant10.get()));
+            MenuCategory menuCategory10c = menuCategoryRepository.save(new MenuCategory(0, "Burger", restaurant10.get()));
+
+            menuItemRepository.save(new MenuItem("Veg Chow min", 120, menuCategory10a));
+            menuItemRepository.save(new MenuItem("Buff Chow min", 140, menuCategory10a));
+            menuItemRepository.save(new MenuItem("Chicken Chow min", 150, menuCategory10a));
+            menuItemRepository.save(new MenuItem("Pork Chow min", 180, menuCategory10a));
+
+            menuItemRepository.save(new MenuItem("Butte Naan", 220, menuCategory10b));
+            menuItemRepository.save(new MenuItem("Buff Keema Naan", 240, menuCategory10b));
+            menuItemRepository.save(new MenuItem("Chicken Keema Naan", 250, menuCategory10b));
+            menuItemRepository.save(new MenuItem("Pork Keema Naan", 280, menuCategory10b));
+
+            menuItemRepository.save(new MenuItem("Veg Burger", 220, menuCategory10c));
+            menuItemRepository.save(new MenuItem("Buff Burger", 240, menuCategory10c));
+            menuItemRepository.save(new MenuItem("Chicken Burger", 250, menuCategory10c));
+            menuItemRepository.save(new MenuItem("Pork Burger", 280, menuCategory10c));
+
+            System.out.println("Menu Category and Item Repository has been populated with 10(users) x 3(category) x 4(items) = 120(items) initial menu items");
         }
     }
 
@@ -610,14 +767,14 @@ public class DatabasePopulate {
 
     private void populateBrowseContent(BrowseContentRepository browseContentRepository, RestaurantRepository restaurantRepository, IdHolderRepository idHolderRepository) {
         if (browseContentRepository.count() == 0) {
-            BrowseContent browseContentR1 = browseContentRepository.save(new BrowseContent("Restaurant List One", "restaurant"));
-            BrowseContent browseContentR2 = browseContentRepository.save(new BrowseContent("Restaurant List Two", "restaurant"));
-            BrowseContent browseContentR3 = browseContentRepository.save(new BrowseContent("Restaurant List Three", "restaurant"));
-            BrowseContent browseContentR4 = browseContentRepository.save(new BrowseContent("Restaurant List Four", "restaurant"));
-            BrowseContent browseContentR5 = browseContentRepository.save(new BrowseContent("Restaurant List Five", "restaurant"));
-            BrowseContent browseContentR6 = browseContentRepository.save(new BrowseContent("Restaurant List Six", "restaurant"));
-            BrowseContent browseContentR7 = browseContentRepository.save(new BrowseContent("Restaurant List Seven", "restaurant"));
-            BrowseContent browseContentR8 = browseContentRepository.save(new BrowseContent("Restaurant List Eight", "restaurant"));
+            BrowseContent browseContentR1 = browseContentRepository.save(new BrowseContent("Best Eateries for Every Taste", "restaurant"));
+            BrowseContent browseContentR2 = browseContentRepository.save(new BrowseContent("Must-Try Restaurants for Food Lovers", "restaurant"));
+            BrowseContent browseContentR3 = browseContentRepository.save(new BrowseContent("Featured Restaurants", "restaurant"));
+            BrowseContent browseContentR4 = browseContentRepository.save(new BrowseContent("Discover Amazing Restaurants", "restaurant"));
+//            BrowseContent browseContentR5 = browseContentRepository.save(new BrowseContent("Restaurant List Five", "restaurant"));
+//            BrowseContent browseContentR6 = browseContentRepository.save(new BrowseContent("Restaurant List Six", "restaurant"));
+//            BrowseContent browseContentR7 = browseContentRepository.save(new BrowseContent("Restaurant List Seven", "restaurant"));
+//            BrowseContent browseContentR8 = browseContentRepository.save(new BrowseContent("Restaurant List Eight", "restaurant"));
 
 
             List<Restaurant> restaurantList = restaurantRepository.findAll();
@@ -626,29 +783,31 @@ public class DatabasePopulate {
             idHolderRepository.save(new IdHolder(restaurantList.get(1).getId().toString(), "restaurant", browseContentR1));
             idHolderRepository.save(new IdHolder(restaurantList.get(2).getId().toString(), "restaurant", browseContentR1));
             idHolderRepository.save(new IdHolder(restaurantList.get(3).getId().toString(), "restaurant", browseContentR1));
-            idHolderRepository.save(new IdHolder(restaurantList.get(4).getId().toString(), "restaurant", browseContentR1));
-            idHolderRepository.save(new IdHolder(restaurantList.get(5).getId().toString(), "restaurant", browseContentR1));
-            idHolderRepository.save(new IdHolder(restaurantList.get(6).getId().toString(), "restaurant", browseContentR1));
 
-            idHolderRepository.save(new IdHolder(restaurantList.get(2).getId().toString(), "restaurant", browseContentR2));
-            idHolderRepository.save(new IdHolder(restaurantList.get(3).getId().toString(), "restaurant", browseContentR2));
             idHolderRepository.save(new IdHolder(restaurantList.get(4).getId().toString(), "restaurant", browseContentR2));
-            idHolderRepository.save(new IdHolder(restaurantList.get(5).getId().toString(), "restaurant", browseContentR2));
             idHolderRepository.save(new IdHolder(restaurantList.get(6).getId().toString(), "restaurant", browseContentR2));
+            idHolderRepository.save(new IdHolder(restaurantList.get(8).getId().toString(), "restaurant", browseContentR2));
+            idHolderRepository.save(new IdHolder(restaurantList.get(0).getId().toString(), "restaurant", browseContentR2));
+            idHolderRepository.save(new IdHolder(restaurantList.get(2).getId().toString(), "restaurant", browseContentR2));
 
-            idHolderRepository.save(new IdHolder(restaurantList.get(3).getId().toString(), "restaurant", browseContentR3));
-            idHolderRepository.save(new IdHolder(restaurantList.get(1).getId().toString(), "restaurant", browseContentR3));
+            idHolderRepository.save(new IdHolder(restaurantList.get(5).getId().toString(), "restaurant", browseContentR3));
             idHolderRepository.save(new IdHolder(restaurantList.get(7).getId().toString(), "restaurant", browseContentR3));
-            idHolderRepository.save(new IdHolder(restaurantList.get(8).getId().toString(), "restaurant", browseContentR3));
-            idHolderRepository.save(new IdHolder(restaurantList.get(0).getId().toString(), "restaurant", browseContentR3));
+            idHolderRepository.save(new IdHolder(restaurantList.get(9).getId().toString(), "restaurant", browseContentR3));
+            idHolderRepository.save(new IdHolder(restaurantList.get(1).getId().toString(), "restaurant", browseContentR3));
+            idHolderRepository.save(new IdHolder(restaurantList.get(3).getId().toString(), "restaurant", browseContentR3));
 
             idHolderRepository.save(new IdHolder(restaurantList.get(0).getId().toString(), "restaurant", browseContentR4));
+            idHolderRepository.save(new IdHolder(restaurantList.get(1).getId().toString(), "restaurant", browseContentR4));
             idHolderRepository.save(new IdHolder(restaurantList.get(2).getId().toString(), "restaurant", browseContentR4));
+            idHolderRepository.save(new IdHolder(restaurantList.get(3).getId().toString(), "restaurant", browseContentR4));
             idHolderRepository.save(new IdHolder(restaurantList.get(4).getId().toString(), "restaurant", browseContentR4));
+            idHolderRepository.save(new IdHolder(restaurantList.get(5).getId().toString(), "restaurant", browseContentR4));
             idHolderRepository.save(new IdHolder(restaurantList.get(6).getId().toString(), "restaurant", browseContentR4));
+            idHolderRepository.save(new IdHolder(restaurantList.get(7).getId().toString(), "restaurant", browseContentR4));
             idHolderRepository.save(new IdHolder(restaurantList.get(8).getId().toString(), "restaurant", browseContentR4));
+            idHolderRepository.save(new IdHolder(restaurantList.get(9).getId().toString(), "restaurant", browseContentR4));
 
-            System.out.println("restaurant browse content (3) done");
+            System.out.println("restaurant browse content (24) done");
         }
     }
 
